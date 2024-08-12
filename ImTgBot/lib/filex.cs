@@ -15,7 +15,7 @@ using static prjx.libx.bscEncdCls;
 namespace prjx.libx
 {
     public class filex
-    {
+    { 
         public static HashSet<string> ProcessFilesDep(string directoryPath)
         {
             var resultSet = new HashSet<string>();

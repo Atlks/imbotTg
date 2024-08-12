@@ -3,6 +3,7 @@ using prjx.libx;
 using prjx.libx;
 using System;
 using System.IO;
+using System.Reflection;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,7 +14,7 @@ using Telegram.Bot.Types.Enums;
 
 class Program
 {
-    private const string BaseFolderName4dlyrpt = "../../../dlyrpt";
+    private const string BaseFolderName4dlyrpt = "../../../db/dlyrpt";
 
     public static async Task Main(string[] args)
     {
@@ -35,14 +36,20 @@ class Program
         ScheduleDailyTask(20, 30, SendMessage4DailyRpt);
         ScheduleDailyTask(11, 00, SendMessage4DailyRpt);
 
+        ScheduleDailyTask(3, 00, SumupDailyRpt);
+
         LoopForever();
     }
 
     // 定时任务调度器
     static   void ScheduleDailyTask(int hour, int minute, Delegate task)
     {
+        var __METHOD__ = nameof(ScheduleDailyTask);
         NewThrd(() =>
         {
+           
+            PrintCallFunArgs(__METHOD__, dbgCls.func_get_args(hour, minute, task.Method.Name));
+
             CreateFolderBasedOnDate(BaseFolderName4dlyrpt);
 
             while (true)
@@ -58,6 +65,7 @@ class Program
 
                 TimeSpan duration = nextRun - now;
 
+                PrintLog("等待到下一个计划时间 " + duration);
                 // 等待到下一个计划时间
                 Sleep(duration);
                 //   await Task.Delay(duration);
@@ -68,16 +76,39 @@ class Program
             }
 
         });
-       
-    }
 
-    private static void Sleep(TimeSpan duration)
+        SleepSec(1.5);
+        PrintRet(__METHOD__, "");
+    }
+    public static async Task SumupDailyRpt()
     {
-        // 使用 Thread.Sleep 方法进行同步等待
-        System.Threading.Thread.Sleep(duration);
+        try
+        {
+            // 创建 Telegram Bot 客户端
+            var botClient = new TelegramBotClient(tokenbot);
+
+            // 准备消息内容
+            string messageContent = "日报小助手统计";
+            string folderPath = CreateFolderBasedOnDate(BaseFolderName4dlyrpt);
+            string alreadySendUsers = GetFileNamesAsJSONFrmFldr(folderPath);
+            messageContent = $"{messageContent}\n目前已经发送的如下：\n{alreadySendUsers}";
+
+            // 发送消息到指定聊天
+            await botClient.SendTextMessageAsync(
+                chatId: chatID,
+                text: messageContent
+            );
+
+            Console.WriteLine("Message sent successfully");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Failed to send message: {ex.Message}");
+        }
     }
 
-    static async Task SendMessage4DailyRpt()
+
+    public static async Task SendMessage4DailyRpt()
     {
         try
         {
@@ -87,7 +118,7 @@ class Program
             // 准备消息内容
             string messageContent = "日报小助手提醒啦：没有发日报的请及时发日报，已发的忽略";
             string folderPath = CreateFolderBasedOnDate(BaseFolderName4dlyrpt);
-            string alreadySendUsers =   GetFileNamesAsJSON(folderPath);
+            string alreadySendUsers =   GetFileNamesAsJSONFrmFldr(folderPath);
             messageContent = $"{messageContent}\n目前已经发送的如下：\n{alreadySendUsers}";
 
             // 发送消息到指定聊天
@@ -105,20 +136,15 @@ class Program
     }
 
     // 创建基于日期的文件夹
-    static string CreateFolderBasedOnDate(string baseFolderName)
+    public static string CreateFolderBasedOnDate(string baseFolderName)
     {
-        string folderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, baseFolderName+DateTime.Now.ToString("yyyyMMdd"));
+        string folderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, baseFolderName + DateTime.Now.ToString("yyyyMMdd"));
         Directory.CreateDirectory(folderPath);
         return folderPath;
     }
 
     // 从文件夹中获取文件名并以 JSON 格式返回
-    static   string GetFileNamesAsJSON(string folderPath)
-    {
-        var files = Directory.GetFiles(folderPath);
-        var fileNames = Array.ConvertAll(files, Path.GetFileName);
-        return JsonConvert.SerializeObject(fileNames, Formatting.Indented);
-    }
+
     private static void RcvMsgStart()
     {
 
@@ -222,6 +248,7 @@ class Program
         });
 
         UpdtHdlr(update);
+
         if (update.Message != null && update.Message.Type == Telegram.Bot.Types.Enums.MessageType.Text)
         {
             MsgHdlr(update);
@@ -281,6 +308,9 @@ class Program
             return;
         }
 
+        //for log
+        LogRcvMsgAsync(update,"MsgDir");
+
         //------------------------today wk rpt
         // 检查消息内容是否包含 "今日工作内容"
         if (message.Text.Contains("今日工作内容"))
@@ -288,16 +318,29 @@ class Program
             try
             {
                   SaveMessageToFile4Dlyrpt(message);
+
+            
                 Console.WriteLine("消息已保存");
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"错误: {ex.Message}");
             }
+            try
+            {
+                //double wrt to   uidFldMode
+                SaveMessageToFile4DlyrptUidFldMd(message);
+                Console.WriteLine("消息已保存 SaveMessageToFile4DlyrptUidFldMd");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"错误: {ex.Message}");
+            }
+           
 
-            // 创建要发送的回复消息
+            //------------------- 创建要发送的回复消息
             string folderPath = CreateFolderBasedOnDate(BaseFolderName4dlyrpt);
-            string alreadySendUsers = GetFileNamesAsJSON(folderPath);
+            string alreadySendUsers = GetFileNamesAsJSONFrmFldr(folderPath);
             string messageContent = $"接受到日报消息.\n目前已经发送的人员如下：\n{alreadySendUsers}";
 
             var reply = new Telegram.Bot.Types.Message
@@ -331,6 +374,53 @@ class Program
 
         Console.WriteLine($"Message saved to {filePath}");
     }
+
+    private static void SaveMessageToFile4DlyrptUidFldMd(Message message)
+    {
+        string uid = message.From?.Id.ToString();
+        // 实际实现保存消息到文件
+        string baseFolderName = ($"../../../db/dlyrptUidFldMdDir/{uid}");
+        string folderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, baseFolderName);
+        Directory.CreateDirectory(folderPath);
+
+        // 创建 dlyrpt 文件夹（如果不存在）
+        if (!Directory.Exists(folderPath))
+        {
+            Directory.CreateDirectory(folderPath);
+        }
+
+        // 序列化消息为 JSON
+        string jsonData;
+        try
+        {
+            jsonData = System.Text.Json.JsonSerializer.Serialize(message, new JsonSerializerOptions { WriteIndented = true });
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException($"JSON 序列化失败: {ex.Message}", ex);
+        }
+
+        // 获取发送人的用户名
+        string username = message.From?.Username ?? "unknown";
+       
+        string timecode = DateTime.Now.ToString("MMdd");
+        string fname = $"{timecode} {uid} uname({username}) frstLastname({message.From?.FirstName} {message.From?.LastName})";
+      //  +DateTime.Now.ToString("yyyyMMdd")
+        // 确定文件路径
+        string fileName = ConvertToValidFileName(fname);
+        string filePath = Path.Combine(folderPath, fileName + ".json");
+
+        // 保存 JSON 文件
+        try
+        {
+            System.IO.File.WriteAllTextAsync(filePath, jsonData);
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException($"无法写入文件: {ex.Message}", ex);
+        }
+    }
+
     // 创建基于日期的文件夹
     //private static string CreateFolderBasedOnDate(string baseFolderName)
     //{

@@ -20,7 +20,12 @@ namespace prjx.libx
 {
     internal class bscGet
     {
-
+        public static string GetFileNamesAsJSONFrmFldr(string folderPath)
+        {
+            var files = Directory.GetFiles(folderPath);
+            var fileNames = Array.ConvertAll(files, Path.GetFileName);
+            return JsonConvert.SerializeObject(fileNames, Formatting.Indented);
+        }
         public static List<Dictionary<string, string>> GetListFrmIniFL(string dbf)
         {
             return ormIni.qryToDic(dbf);

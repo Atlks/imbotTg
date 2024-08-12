@@ -1,0 +1,27 @@
+{
+  "update_id": 226541035,
+  "message": {
+    "message_id": 3082,
+    "from": {
+      "id": 879006550,
+      "is_bot": false,
+      "first_name": "十 Adam 大鱼 刘洋 汤姆",
+      "username": "Xxx007865",
+      "language_code": "en"
+    },
+    "date": 1723443338,
+    "chat": {
+      "id": -1002155607657,
+      "type": "supergroup",
+      "title": "tasks wk grp"
+    },
+    "new_chat_members": [
+      {
+        "id": 7061706802,
+        "is_bot": true,
+        "first_name": "ntf2024",
+        "username": "ntf2024bot"
+      }
+    ]
+  }
+}

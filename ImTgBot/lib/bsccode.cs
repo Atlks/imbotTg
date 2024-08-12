@@ -15,6 +15,20 @@ namespace prjx.libx
 {
     internal class bsccode
     {
+        public static void SleepSec(double duration)
+        {
+            // 将时间转换为毫秒，并确保是整数
+            int milliseconds = (int)(duration * 1000);
+
+            // 使用 Thread.Sleep 方法进行同步等待
+            System.Threading.Thread.Sleep(milliseconds);
+        }
+        public static void Sleep(TimeSpan duration)
+        {
+            // 使用 Thread.Sleep 方法进行同步等待
+            System.Threading.Thread.Sleep(duration);
+        }
+
         public static HashSet<string> SplitToHashset(string input)
         { // 使用 Split 方法将字符串分割成数组
             string[] items = input.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
@@ -1012,7 +1026,7 @@ namespace prjx.libx
         {
             while (true)
             {
-                Thread.Sleep(500);
+                Thread.Sleep(5000);
             }
         }
         public static string AddTimet(int secondsToAdd)

@@ -95,6 +95,41 @@ namespace prjx.libx
                 Print($"An error occurred: {ex.Message}");
             }
         }
+        public static void LogRcvMsgAsync(Update update, string rcvMsgDir)
+        {
+            CallAsyncNewThrd(() =>
+            {
+                Thread.Sleep(2000);
+                LogRcvMsg(update, rcvMsgDir);
+                //   Thread.Sleep(6000);
+                dbgpad = 0;
+                //todo save chat sess
+            });
+         //   LogRcvMsg(update, rcvMsgDir);
+        }
+            public static void LogRcvMsg(Update update,string rcvMsgDir)
+        {
+            try
+            {
+                var updateString = JsonConvert.SerializeObject(update, Formatting.Indented);
+                string dir1 = rcvMsgDir;
+                //    "msgRcvDir1115";
+                Directory.CreateDirectory(dir1);
+                //print(updateString);
+                // 获取当前时间并格式化为文件名
+                string timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss_fff");
+                string fileName = $"{dir1}/{timestamp}.json";
+                Print(fileName);
+                filex.Mkdir4File(fileName);
+                System.IO.File.WriteAllText("" + fileName, updateString);
+            }
+            catch (Exception e)
+            {
+                Print(e);
+            }
+
+        }
+
         public static void bot_logRcvMsg(Update update)
         {
             try
