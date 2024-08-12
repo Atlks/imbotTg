@@ -390,10 +390,17 @@ namespace prjx.libx
         }
         public static void SetField<t>(SortedList<string, t> cfg, string f, object v)
         {
-            if (cfg.ContainsKey(f))
-                cfg.Remove(f);
+            try
+            {
+                if (cfg.ContainsKey(f))
+                    cfg.Remove(f);
 
-            cfg.Add(f, (t)v);
+                cfg.Add(f, (t)v);
+            }catch(Exception e)
+            {
+                PrintExcept("SetField401", e);
+            }
+           
         }
 
         public static void SetField(SortedList cfg, string f, object v)
