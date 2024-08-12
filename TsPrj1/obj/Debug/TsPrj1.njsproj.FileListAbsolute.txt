@@ -1,0 +1,3 @@
+C:\Users\Administrator\source\repos\ImTgBot\TsPrj1\obj\Debug\TsPrj1.njsproj.AssemblyReference.cache
+C:\Users\Administrator\source\repos\ImTgBot\TsPrj1\obj\Debug\TsPrj1.njsproj.CoreCompileInputs.cache
+C:\Users\Administrator\source\repos\ImTgBot\TsPrj1\bin\Microsoft.NodejsTools.WebRole.dll
