@@ -14,7 +14,7 @@ using Telegram.Bot.Types.Enums;
 
 class Program
 {
-    private const string BaseFolderName4dlyrpt = "../../../db/dlyrpt";
+    private const string BaseFolderName4dlyrptPart = "../../../db/dlyrpt";
 
     public static async Task Main(string[] args)
     {
@@ -50,7 +50,7 @@ class Program
            
             PrintCallFunArgs(__METHOD__, dbgCls.func_get_args(hour, minute, task.Method.Name));
 
-            CreateFolderBasedOnDate(BaseFolderName4dlyrpt);
+            CreateFolderBasedOnDate(BaseFolderName4dlyrptPart);
 
             while (true)
             {
@@ -80,6 +80,23 @@ class Program
         SleepSec(1.5);
         PrintRet(__METHOD__, "");
     }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name=""></param>
+    /// <returns></returns>
+    public static string GetTodayCodeMnsHrs(int  hoursToSubtract)
+    {
+        // 获取当前时间
+        DateTime currentTime = DateTime.Now;
+
+        // 从当前时间减去指定的小时数
+        DateTime newTime = currentTime.AddHours(-hoursToSubtract);
+
+        // 格式化为 "yyyymmdd" 并返回
+        return newTime.ToString("MMdd");
+    }
     public static async Task SumupDailyRpt()
     {
         try
@@ -89,7 +106,7 @@ class Program
 
             // 准备消息内容
             string messageContent = "日报小助手统计";
-            string folderPath = CreateFolderBasedOnDate(BaseFolderName4dlyrpt);
+            string folderPath = BaseFolderName4dlyrptPart+ GetTodayCodeMnsHrs(4);
             string alreadySendUsers = GetFileNamesAsJSONFrmFldr(folderPath);
             messageContent = $"{messageContent}\n目前已经发送的如下：\n{alreadySendUsers}";
 
@@ -117,7 +134,7 @@ class Program
 
             // 准备消息内容
             string messageContent = "日报小助手提醒啦：没有发日报的请及时发日报，已发的忽略";
-            string folderPath = CreateFolderBasedOnDate(BaseFolderName4dlyrpt);
+            string folderPath = CreateFolderBasedOnDate(BaseFolderName4dlyrptPart);
             string alreadySendUsers =   GetFileNamesAsJSONFrmFldr(folderPath);
             messageContent = $"{messageContent}\n目前已经发送的如下：\n{alreadySendUsers}";
 
@@ -138,7 +155,7 @@ class Program
     // 创建基于日期的文件夹
     public static string CreateFolderBasedOnDate(string baseFolderName)
     {
-        string folderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, baseFolderName + DateTime.Now.ToString("yyyyMMdd"));
+        string folderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, baseFolderName + DateTime.Now.ToString("MMdd"));
         Directory.CreateDirectory(folderPath);
         return folderPath;
     }
@@ -339,7 +356,7 @@ class Program
            
 
             //------------------- 创建要发送的回复消息
-            string folderPath = CreateFolderBasedOnDate(BaseFolderName4dlyrpt);
+            string folderPath =  (BaseFolderName4dlyrptPart+ GetTodayCode());
             string alreadySendUsers = GetFileNamesAsJSONFrmFldr(folderPath);
             string messageContent = $"接受到日报消息.\n目前已经发送的人员如下：\n{alreadySendUsers}";
 
@@ -379,7 +396,7 @@ class Program
     {
         string uid = message.From?.Id.ToString();
         // 实际实现保存消息到文件
-        string baseFolderName = ($"../../../db/dlyrptUidFldMdDir/{uid}");
+        string baseFolderName = ($"../../../db/dlyrptUid{uid}");
         string folderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, baseFolderName);
         Directory.CreateDirectory(folderPath);
 
@@ -440,7 +457,7 @@ class Program
     private static void SaveMessageToFile4Dlyrpt(Message message)
     {
         // 实际实现保存消息到文件
-        string folderPath = CreateFolderBasedOnDate(BaseFolderName4dlyrpt);
+        string folderPath = (BaseFolderName4dlyrptPart+GetTodayCode());
 
         // 创建 dlyrpt 文件夹（如果不存在）
         if (!Directory.Exists(folderPath))
@@ -478,5 +495,10 @@ class Program
         {
             throw new InvalidOperationException($"无法写入文件: {ex.Message}", ex);
         }
+    }
+
+    private static string GetTodayCode()
+    {
+        return GetTodayCodeMnsHrs(4);
     }
 }

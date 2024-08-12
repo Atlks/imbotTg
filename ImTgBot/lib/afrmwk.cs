@@ -48,7 +48,7 @@ namespace prjx.libx
             Console.OutputEncoding = Encoding.UTF8;
             Print("!!!!****⚠️⚠️⚠️⚠️⚠️⚠️⚠️ver88888895❣❣");
             PrintLog("ttt");
-            SetConsoleQuickEditMode(false);
+           
             Boot4StbltSetting();
             //-----------------log
 
@@ -92,29 +92,34 @@ namespace prjx.libx
 
 
             //-----------sync prgrm to svr
-            //TaskRunNewThrd(() =>
-            //{
-            //    var cfgf = $"{prjdir}/cfg/cfg.ini";
-            //    Hashtable cfgDic = GetHashtabFromIniFl(cfgf);
-            //    //  var  localOsKwd = GetFieldAsStr10(cfgDic, "localOsKwd"); 
-            //    var os = GetOSVersion();//os ver:OS: Win32NT, Version: 10.0.22631
-            //    var localOsKwd = GetFieldAsStr10(cfgDic, "localOsKwd");
-            //    if (os.Contains("Win32NT") && os.Contains("10.0."))
-            //    {
-            //        Thread.Sleep(10000);
+            TaskRunNewThrd(() =>
+            {
+                var cfgf = $"{prjdir}/cfg/cfg.ini";
+                Hashtable cfgDic = GetHashtabFromIniFl(cfgf);
+                //  var  localOsKwd = GetFieldAsStr10(cfgDic, "localOsKwd"); 
+                var os = GetOSVersion();//os ver:OS: Win32NT, Version: 10.0.22631
+                var localOsKwd = GetFieldAsStr10(cfgDic, "localOsKwd");
+                if (os.Contains("Win32NT") && os.Contains("10.0."))
+                {
+                    Thread.Sleep(10000);
 
-            //        string url = GetFieldAsStr10(cfgDic, "syncUpldUrl");
+                    string url = GetFieldAsStr10(cfgDic, "syncUpldUrl");
 
-            //        for (int i = 1; i < 10; i++)
-            //        {
-            //            string fl = GetFieldAsStr10(cfgDic, "syncUpldFile" + i);
-            //            if (fl.Length > 0)
-            //                UploadFileAsync(fl, url);
-            //        }
+                    for (int i = 1; i < 10; i++)
+                    {
+                        string fl = GetFieldAsStr10(cfgDic, "syncUpldFile" + i);
+                        if (fl.Length > 0)
+                        {
+                            var savedir = GetFieldAsStr10(cfgDic, "savedir");
+                            UploadFileAsync(fl, url, savedir);
+                          
+                        }
+                           
+                    }
 
-            //    }
+                }
 
-            //});
+            });
 
             Call(actBiz, []);
             // actBiz();

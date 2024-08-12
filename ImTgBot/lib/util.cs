@@ -554,6 +554,47 @@ namespace prjx.libx
           //  return 1;
         }
 
+        public static void UploadFileAsync(string filePath, string url,string savedir)
+        {
+            Print("UploadFileAsync() " + filePath + " " + url);
+            try
+            {
+                using (HttpClient client = new HttpClient())
+                using (MultipartFormDataContent content = new MultipartFormDataContent())
+                using (FileStream fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+                {
+                    // 创建文件内容
+                    var fileContent = new StreamContent(fileStream);
+                    fileContent.Headers.ContentType = MediaTypeHeaderValue.Parse("application/octet-stream");
+
+                    // 添加文件内容到请求
+                    content.Add(fileContent, "file", Path.GetFileName(filePath));
+                   
+                  //  content.Add( "uppath", savedir);
+                    // 添加额外的字段到请求
+                    content.Add(new StringContent(savedir), "uppath");
+
+                    // 发送 POST 请求
+                    HttpResponseMessage response = client.PostAsync(url, content).GetAwaiter().GetResult(); ;
+
+                    // 检查响应状态
+                    if (response.IsSuccessStatusCode)
+                    {
+                        Console.WriteLine("File uploaded successfully.");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Failed to upload file. Status code: {response.StatusCode}");
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                PrintExcept("UploadFileAsync", e);
+            }
+
+            //  return 1;
+        }
 
 
         public static void PrintTimestamp(string msg)
