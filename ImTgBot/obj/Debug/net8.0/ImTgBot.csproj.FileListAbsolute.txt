@@ -91,3 +91,4 @@ C:\Users\Administrator\source\repos\ImTgBot\ImTgBot\obj\Debug\net8.0\refint\ImTg
 C:\Users\Administrator\source\repos\ImTgBot\ImTgBot\obj\Debug\net8.0\ImTgBot.pdb
 C:\Users\Administrator\source\repos\ImTgBot\ImTgBot\obj\Debug\net8.0\ImTgBot.genruntimeconfig.cache
 C:\Users\Administrator\source\repos\ImTgBot\ImTgBot\obj\Debug\net8.0\ref\ImTgBot.dll
+C:\Users\Administrator\source\repos\ImTgBot\ImTgBot\obj\Debug\net8.0\ImTgBot.sourcelink.json
