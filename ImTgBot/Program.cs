@@ -13,10 +13,9 @@ using Telegram.Bot.Types.Enums;
 
 class Program
 {
+    private const string BaseFolderName4dlyrpt = "../../../dlyrpt";
 
-
-
-   public static async Task Main(string[] args)
+    public static async Task Main(string[] args)
     {
         Evtboot(() =>
         {
@@ -28,11 +27,13 @@ class Program
         RcvMsgStart();
 
         // 设置每天 5:30 执行任务
-        ScheduleDailyTask(14, 21,  SendMessage4DailyRpt);
-        //scheduleDailyTask(5, 30, sendMessage4daylyrpt);
-        //scheduleDailyTask(6, 30, sendMessage4daylyrpt);
-        //scheduleDailyTask(8, 30, sendMessage4daylyrpt);
-        //scheduleDailyTask(11, 30, sendMessage4daylyrpt);
+        ScheduleDailyTask(11, 36,  SendMessage4DailyRpt);//test
+
+
+        ScheduleDailyTask(17, 59, SendMessage4DailyRpt);
+        ScheduleDailyTask(18, 30, SendMessage4DailyRpt);
+        ScheduleDailyTask(20, 30, SendMessage4DailyRpt);
+        ScheduleDailyTask(11, 00, SendMessage4DailyRpt);
 
         LoopForever();
     }
@@ -42,7 +43,7 @@ class Program
     {
         NewThrd(() =>
         {
-            CreateFolderBasedOnDate("dlyrpt");
+            CreateFolderBasedOnDate(BaseFolderName4dlyrpt);
 
             while (true)
             {
@@ -84,10 +85,10 @@ class Program
             var botClient = new TelegramBotClient(tokenbot);
 
             // 准备消息内容
-            string messageContent = "时间到了发日报了";
-            string folderPath = CreateFolderBasedOnDate("dlyrpt");
+            string messageContent = "日报小助手提醒啦：没有发日报的请及时发日报，已发的忽略";
+            string folderPath = CreateFolderBasedOnDate(BaseFolderName4dlyrpt);
             string alreadySendUsers =   GetFileNamesAsJSON(folderPath);
-            messageContent = $"{messageContent}\n目前已经发送的人员如下：\n{alreadySendUsers}";
+            messageContent = $"{messageContent}\n目前已经发送的如下：\n{alreadySendUsers}";
 
             // 发送消息到指定聊天
             await botClient.SendTextMessageAsync(
@@ -295,7 +296,7 @@ class Program
             }
 
             // 创建要发送的回复消息
-            string folderPath = CreateFolderBasedOnDate("dlyrpt");
+            string folderPath = CreateFolderBasedOnDate(BaseFolderName4dlyrpt);
             string alreadySendUsers = GetFileNamesAsJSON(folderPath);
             string messageContent = $"接受到日报消息.\n目前已经发送的人员如下：\n{alreadySendUsers}";
 
@@ -349,7 +350,7 @@ class Program
     private static void SaveMessageToFile4Dlyrpt(Message message)
     {
         // 实际实现保存消息到文件
-        string folderPath = CreateFolderBasedOnDate("dlyrpt");
+        string folderPath = CreateFolderBasedOnDate(BaseFolderName4dlyrpt);
 
         // 创建 dlyrpt 文件夹（如果不存在）
         if (!Directory.Exists(folderPath))
