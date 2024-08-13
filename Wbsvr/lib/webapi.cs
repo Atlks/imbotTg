@@ -755,7 +755,10 @@ namespace mdsj.lib
                 foreach (var file in request.Form.Files)
                 {
                     // Get the file content and save it to a desired location
-                    var filePath = Path.Combine(saveOBJ["uppath"].ToString(), file.FileName);
+                    var uppath = GetFieldAsStr(saveOBJ, "uppath");
+                    if (uppath == "")
+                        uppath = "d:/uplds";
+                    var filePath = Path.Combine(uppath, file.FileName);
                   
                     DelFil(filePath);
                     fil = filePath;
@@ -773,14 +776,14 @@ namespace mdsj.lib
             Jmp2end("upldPOSTWbapi");
         }
 
-        private static void DelFil(string filePath)
+        public static void DelFil(string filePath)
         {
             try
             {
                 File.Delete(filePath);
             }catch(Exception e)
             {
-
+                PrintExcept("delfil", e);
             }
            
         }

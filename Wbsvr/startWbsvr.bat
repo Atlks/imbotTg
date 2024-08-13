@@ -1,9 +1,9 @@
-./bin/Debug/net8.0/mdsj.exe
+ title "wbsvrrr"
 chcp 65001
 
 
 :: 定义源文件路径和目标目录路径
-set "sourceFile=%~dp0\webroot\uploads1016\mdsj.dll"
+set "sourceFile=%~dp0\wbsvr.dll"
 set "targetDir=%~dp0\bin\debug\net8.0"
 
 :: 检查目标目录是否存在，如果不存在则创建它
@@ -21,7 +21,7 @@ if %ERRORLEVEL% == 0 (
 
 
 :: 定义源文件路径和目标目录路径
-set "sourceFile=%~dp0\webroot\uploads1016\mdsj.exe"
+set "sourceFile=%~dp0\wbsvr.exe"
 set "targetDir=%~dp0\bin\debug\net8.0"
 
 :: 检查目标目录是否存在，如果不存在则创建它

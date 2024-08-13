@@ -29,26 +29,27 @@ class Program
         RcvMsgStart();
 
         // 设置每天 5:30 执行任务
-        ScheduleDailyTask(11, 36,  SendMessage4DailyRpt);//test
+        if (IsExistFil("c:/teststart.txt"))
+            ScheduleDailyTask(11, 36, SendMessage4DailyRpt);//test
 
 
-        ScheduleDailyTask(17, 59, SendMessage4DailyRpt);
-        ScheduleDailyTask(18, 30, SendMessage4DailyRpt);
+        ScheduleDailyTask(18, 55, SendMessage4DailyRpt);
         ScheduleDailyTask(20, 30, SendMessage4DailyRpt);
-        ScheduleDailyTask(11, 00, SendMessage4DailyRpt);
+        ScheduleDailyTask(22, 30, SendMessage4DailyRpt);
+        ScheduleDailyTask(23, 55, SendMessage4DailyRpt);
 
-        ScheduleDailyTask(3, 00, SumupDailyRpt);
+        ScheduleDailyTask(4, 00, SumupDailyRpt);
 
         LoopForever();
     }
 
     // 定时任务调度器
-    static   void ScheduleDailyTask(int hour, int minute, Delegate task)
+    static void ScheduleDailyTask(int hour, int minute, Delegate task)
     {
         var __METHOD__ = nameof(ScheduleDailyTask);
         NewThrd(() =>
         {
-           
+
             PrintCallFunArgs(__METHOD__, dbgCls.func_get_args(hour, minute, task.Method.Name));
 
             CreateFolderBasedOnDate(BaseFolderName4dlyrptPart);
@@ -88,7 +89,7 @@ class Program
     /// </summary>
     /// <param name=""></param>
     /// <returns></returns>
-    public static string GetTodayCodeMnsHrs(int  hoursToSubtract)
+    public static string GetTodayCodeMnsHrs(int hoursToSubtract)
     {
         // 获取当前时间
         DateTime currentTime = DateTime.Now;
@@ -108,7 +109,7 @@ class Program
 
             // 准备消息内容
             string messageContent = "日报小助手统计";
-            string folderPath = BaseFolderName4dlyrptPart+ GetTodayCodeMnsHrs(4);
+            string folderPath = BaseFolderName4dlyrptPart + GetTodayCodeMnsHrs(4);
             string alreadySendUsers = GetFileNamesAsJSONFrmFldr(folderPath);
             messageContent = $"{messageContent}\n目前已经发送的如下：\n{alreadySendUsers}";
 
@@ -137,7 +138,7 @@ class Program
             // 准备消息内容
             string messageContent = "日报小助手提醒啦：没有发日报的请及时发日报，已发的忽略";
             string folderPath = CreateFolderBasedOnDate(BaseFolderName4dlyrptPart);
-            string alreadySendUsers =   GetFileNamesAsJSONFrmFldr(folderPath);
+            string alreadySendUsers = GetFileNamesAsJSONFrmFldr(folderPath);
             messageContent = $"{messageContent}\n目前已经发送的如下：\n{alreadySendUsers}";
 
             // 发送消息到指定聊天
@@ -328,7 +329,7 @@ class Program
         }
 
         //for log
-        LogRcvMsgAsync(update,"MsgDir");
+        LogRcvMsgAsync(update, "MsgDir");
 
         //------------------------today wk rpt
         // 检查消息内容是否包含 "今日工作内容"
@@ -336,9 +337,9 @@ class Program
         {
             try
             {
-                  SaveMessageToFile4Dlyrpt(message);
+                SaveMessageToFile4Dlyrpt(message);
 
-            
+
                 Console.WriteLine("消息已保存");
             }
             catch (Exception ex)
@@ -355,10 +356,10 @@ class Program
             {
                 Console.WriteLine($"错误: {ex.Message}");
             }
-           
+
 
             //------------------- 创建要发送的回复消息
-            string folderPath =  (BaseFolderName4dlyrptPart+ GetTodayCode());
+            string folderPath = (BaseFolderName4dlyrptPart + GetTodayCode());
             string alreadySendUsers = GetFileNamesAsJSONFrmFldr(folderPath);
             string messageContent = $"接受到日报消息.\n目前已经发送的人员如下：\n{alreadySendUsers}";
 
@@ -366,7 +367,7 @@ class Program
             {
                 Chat = new Chat { Id = message.Chat.Id },
                 Text = messageContent,
-               // ReplyToMessageId = message.MessageId
+                // ReplyToMessageId = message.MessageId
             };
 
             // 发送回复
@@ -380,7 +381,7 @@ class Program
                 Console.WriteLine($"Failed to send message: {ex.Message}");
             }
         }
-      
+
 
         // 创建存储消息的文件路径
         var filePath = Path.Combine(rcvmsgDir, $"message_{update.Message.MessageId}.txt");
@@ -421,10 +422,10 @@ class Program
 
         // 获取发送人的用户名
         string username = message.From?.Username ?? "unknown";
-       
+
         string timecode = DateTime.Now.ToString("MMdd");
         string fname = $"{timecode} {uid} uname({username}) frstLastname({message.From?.FirstName} {message.From?.LastName})";
-      //  +DateTime.Now.ToString("yyyyMMdd")
+        //  +DateTime.Now.ToString("yyyyMMdd")
         // 确定文件路径
         string fileName = ConvertToValidFileName(fname);
         string filePath = Path.Combine(folderPath, fileName + ".json");
@@ -459,7 +460,7 @@ class Program
     private static void SaveMessageToFile4Dlyrpt(Message message)
     {
         // 实际实现保存消息到文件
-        string folderPath = (BaseFolderName4dlyrptPart+GetTodayCode());
+        string folderPath = (BaseFolderName4dlyrptPart + GetTodayCode());
 
         // 创建 dlyrpt 文件夹（如果不存在）
         if (!Directory.Exists(folderPath))
@@ -491,7 +492,7 @@ class Program
         // 保存 JSON 文件
         try
         {
-              System.IO.File.WriteAllTextAsync(filePath, jsonData);
+            System.IO.File.WriteAllTextAsync(filePath, jsonData);
         }
         catch (Exception ex)
         {
