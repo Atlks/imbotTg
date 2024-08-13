@@ -347,7 +347,7 @@ class Program
             string messageContent = "日报小助手统计";
             string folderPath = BaseFolderName4dlyrptPart + GetTodayCodeMnsHrs(8);
             string alreadySendUsers = GetFileNamesAsJSONFrmFldr(folderPath);
-            messageContent = $"{messageContent}\n目前已经发送的如下：\n{alreadySendUsers}";
+       //     messageContent = $"{messageContent}\n目前已经发送的如下：\n{alreadySendUsers}";
 
             // 发送消息到指定聊天
             await botClient.SendTextMessageAsync(
@@ -372,7 +372,7 @@ class Program
         }
     }
 
-    public static async Task SumupDailyRptBydate(string date)
+    public static async Task SumupDailyRptBydate(string date,string chatID)
     {
         try
         {
@@ -383,7 +383,7 @@ class Program
             string messageContent = "日报小助手统计";
             string folderPath = BaseFolderName4dlyrptPart + date;
             string alreadySendUsers = GetFileNamesAsJSONFrmFldr(folderPath);
-            messageContent = $"{messageContent}\n目前已经发送的如下：\n{alreadySendUsers}";
+      //      messageContent = $"{messageContent}\n目前已经发送的如下：\n{alreadySendUsers}";
 
             // 发送消息到指定聊天
             await botClient.SendTextMessageAsync(
@@ -419,7 +419,7 @@ class Program
             string messageContent = "日报小助手提醒啦：没有发日报的请及时发日报，已发的忽略";
             string folderPath = CreateFolderBasedOnDate(BaseFolderName4dlyrptPart);
             string alreadySendUsers = GetFileNamesAsJSONFrmFldr(folderPath);
-            messageContent = $"{messageContent}\n目前已经发送的如下：\n{alreadySendUsers}";
+        //    messageContent = $"{messageContent}\n目前已经发送的如下：\n{alreadySendUsers}";
 
             // 发送消息到指定聊天
             await botClient.SendTextMessageAsync(
@@ -619,7 +619,18 @@ class Program
         string[] a = cmd.Split(" ");
         a = update.Message.Text.Split(" ");
         string date = a[1];
-        SumupDailyRptBydate(date);
+        SumupDailyRptBydate(date,update.Message.Chat.Id.ToString());
+
+
+    }
+
+    public static void CmdrptxHdlr(string cmd, Update update)
+    {
+        //    if(cmd=="rpt")
+        string[] a = cmd.Split(" ");
+        a = update.Message.Text.Split(" ");
+        string date = a[1];
+        SumupDailyRptBydate(date, chatID);
 
 
     }
@@ -665,7 +676,8 @@ class Program
             //------------------- 创建要发送的回复消息
             string folderPath = (BaseFolderName4dlyrptPart + GetTodayCode());
             string alreadySendUsers = GetFileNamesAsJSONFrmFldr(folderPath);
-            string messageContent = $"接受到日报消息.\n目前已经发送的人员如下：\n{alreadySendUsers}";
+            string messageContent = $"接受到日报消息";
+            //    $".\n目前已经发送的人员如下：\n{alreadySendUsers}";
 
             var reply = new Telegram.Bot.Types.Message
             {
