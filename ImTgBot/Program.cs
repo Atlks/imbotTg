@@ -2,9 +2,12 @@
 using prjx.libx;
 using prjx.libx;
 using System;
+using System.Collections;
 using System.IO;
 using System.Reflection;
+using System.Text;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Tasks;
 using Telegram.Bot;
@@ -16,9 +19,82 @@ class Program
 {
     private const string BaseFolderName4dlyrptPart = "../../../db/dlyrpt";
 
+
+    private static HashSet<string> GetKeysAsHashSet(SortedList sortedList)
+    {
+        // 使用 HashSet 来存储并返回键集合
+        return new HashSet<string>(sortedList.Keys.Cast<string>());
+    }
+    private static string GetListKeys(SortedList sortedList)
+    {
+      //  sortedList.Keys
+        HashSet<string> keys = new HashSet<string>();
+        // 使用 StringBuilder 来提高性能
+        var sb = new System.Text.StringBuilder();
+
+        foreach (DictionaryEntry entry in sortedList)
+        {
+            // 获取键并追加到 StringBuilder
+            var key = entry.Key.ToString();
+            sb.Append(key).Append(' ');
+        }
+
+        // 移除末尾多余的空格
+        if (sb.Length > 0)
+        {
+            sb.Length--;  // 移除最后一个空格
+        }
+
+        return sb.ToString();
+    }
+
+    private static string ConcatenateKeysWithSpace(SortedList sortedList)
+    {
+        // 使用 StringBuilder 来提高性能
+        var sb = new System.Text.StringBuilder();
+
+        foreach (DictionaryEntry entry in sortedList)
+        {
+            // 获取键并追加到 StringBuilder
+            var key = entry.Key.ToString();
+            sb.Append(key).Append(' ');
+        }
+
+        // 移除末尾多余的空格
+        if (sb.Length > 0)
+        {
+            sb.Length--;  // 移除最后一个空格
+        }
+
+        return sb.ToString();
+    }
+
+
+    private static string FormatSortedListToMarkdown(SortedList sortedList)
+    {
+        var sb = new StringBuilder();
+
+        // 添加表头
+        sb.AppendLine("| uid      | name     | demo|");
+        sb.AppendLine("|----------|-----------|--------|");
+
+        // 遍历 SortedList 并添加到 Markdown 表格
+        foreach (DictionaryEntry entry in sortedList)
+        {
+            string key = (string)entry.Key;
+            string value = (string)entry.Value;
+            sb.AppendLine($"| {key,-8} | {value,-9} | |");
+        }
+
+        return sb.ToString();
+    }
     public static async Task Main(string[] args)
     {
-        string req = "st finished HTTP/1.0 GET http://lianxin.co/api/getlist?page=1&pagesize=20&%E5%9B%AD%E5%8C%BA=&%E5%9B%BD%E5%AE%B6=%E5%8D%B0%E5%BA%A6%E5%B0%BC%E8%A5%BF%E4%BA%9A,%E6%B3%B0%E5%9B%BD,%E7%BC%85%E7%94%B8&%E5%9F%8E%E5%B8%82=";
+        string folderPath = $"{prjdir}/db/dlyrpt0812";
+        string mkd2console = GetRptToday(folderPath);
+        Print(mkd2console);
+
+        //     string req = "st finished HTTP/1.0 GET http://lianxin.co/api/getlist?page=1&pagesize=20&%E5%9B%AD%E5%8C%BA=&%E5%9B%BD%E5%AE%B6=%E5%8D%B0%E5%BA%A6%E5%B0%BC%E8%A5%BF%E4%BA%9A,%E6%B3%B0%E5%9B%BD,%E7%BC%85%E7%94%B8&%E5%9F%8E%E5%B8%82=";
         Evtboot(() =>
         {
             //   botClient = botClient;
@@ -40,7 +116,167 @@ class Program
 
         ScheduleDailyTask(4, 00, SumupDailyRpt);
 
+        if (IsExistFil("c:/teststart.txt"))
+            ScheduleDailyTask(15, 40, SumupDailyRpt);//test
         LoopForever();
+    }
+
+    private static string GetRptToday(string folderPath)
+    {
+        string alreadySendUsers = GetFileNamesAsJSONFrmFldr(folderPath);
+        SortedList inimap = NewSortedListFrmIni($"{prjdir}/cfg/mem.ini");
+        HashSet<string> ids = GetKeysAsHashSet(inimap);
+        //ConcatenateKeysWithSpace(inimap);
+        //     search usrs  where uid not in files
+        HashSet<string> noExistUid = SubtractFrmFilist(ids, alreadySendUsers);
+        SortedList noRptUsers = FltWhrKeyIn(inimap, noExistUid);
+        string mkd = FormatSortedListToMarkdown(noRptUsers);
+        Print(mkd);
+
+        string mkd2console =
+             FormatAndPrintMarkdownTable(mkd);
+        return mkd2console;
+    }
+
+    private static SortedList FltWhrKeyIn(SortedList inimap, HashSet<string> noExistUid)
+    {
+        // 创建新的 SortedList 来存储过滤后的键值对
+        var filteredList = new SortedList();
+
+        // 遍历 inimap 的所有键
+        foreach (DictionaryEntry entry in inimap)
+        {
+            string key = (string)entry.Key;
+
+            // 如果键在 noExistUid 中，添加到新的 SortedList
+            if (noExistUid.Contains(key))
+            {
+                filteredList.Add(key, entry.Value);
+            }
+        }
+
+        return filteredList;
+    }
+
+    private static HashSet<string> SubtractFrmFilist(HashSet<string> ids, string jsonArray)
+    {
+        // 将 JSON 数组字符串转换为 List<string>
+        var userList = JsonConvert.DeserializeObject<List<string>>(jsonArray);
+        // 创建一个新的列表来存储过滤后的结果
+        var filteredList_ids = new HashSet<string>();
+       // string[] a = ids.Split(" ");
+
+        foreach (var flstr in userList)
+        {
+            foreach (string id in ids)
+            {
+                // 检查用户是否包含指定字符串
+                if (flstr.Contains(id))
+                {
+                    // 不包含指定字符串的用户添加到过滤列表
+                    filteredList_ids.Add(id);
+                }
+            }
+
+        }
+        return Subtract(ids, filteredList_ids);
+
+    }
+    private static string SubtractFrmFilist(string ids, string jsonArray)
+    {
+        // 将 JSON 数组字符串转换为 List<string>
+        var userList = JsonConvert.DeserializeObject<List<string>>(jsonArray);
+        // 创建一个新的列表来存储过滤后的结果
+        var filteredList_ids = new List<string>();
+        string[] a = ids.Split(" ");
+
+        foreach (var flstr in userList)
+        {
+            foreach(string id in a)
+            {
+                // 检查用户是否包含指定字符串
+                if (flstr.Contains( ids))
+                {
+                    // 不包含指定字符串的用户添加到过滤列表
+                    filteredList_ids.Add(id);
+                }
+            }
+            
+        }
+        return Subtract(ids, filteredList_ids);
+
+    }
+    private static HashSet<string> Subtract(HashSet<string> ids, HashSet<string> filteredList_ids)
+    {
+        return Difference<string>(ids, filteredList_ids);
+    }
+    private static HashSet<T> Difference<T>(HashSet<T> set1, HashSet<T> set2)
+    {
+        // 创建 set1 的副本以保持原始集合不变
+        var resultSet = new HashSet<T>(set1);
+
+        // 从 resultSet 中移除 set2 中的元素
+        resultSet.ExceptWith(set2);
+
+        return resultSet;
+    }
+    private static string Subtract(string ids, List<string> filteredList_ids)
+    {
+        // 将空格分割的 ids 字符串转换为列表
+        var idList = ids.Split(' ').ToList();
+
+        // 创建一个 HashSet 来加快过滤操作
+        var filteredSet = new HashSet<string>(filteredList_ids);
+
+        // 过滤掉在 filteredListIds 中的 ID
+        var resultList = idList.Where(id => !filteredSet.Contains(id)).ToList();
+
+        // 将结果列表转换为以空格分隔的字符串
+        return string.Join(" ", resultList);
+    }
+
+    private static bool IsContainsAny(string flstr, string ids)
+    {
+        throw new NotImplementedException();
+    }
+
+    private static SortedList NewSortedListFrmIni(string v)
+    {
+        return GetSortedlistFrmIni(v);
+    }
+
+    private static SortedList GetSortedlistFrmIni(string filePath)
+    {
+        var sortedList = new SortedList();
+
+        if (!System.IO.File.Exists(filePath))
+        {
+            throw new FileNotFoundException("INI file not found", filePath);
+        }
+
+        var lines = System.IO.File.ReadAllLines(filePath);
+
+        foreach (var line in lines)
+        {
+            // 跳过空行和注释行
+            var trimmedLine = line.Trim();
+            if (string.IsNullOrEmpty(trimmedLine) || trimmedLine.StartsWith(";"))
+            {
+                continue;
+            }
+
+            // 处理键值对
+            var keyValue = trimmedLine.Split('=', 2);
+            if (keyValue.Length == 2)
+            {
+                var key = keyValue[0].Trim();
+                var value = keyValue[1].Trim();
+
+                sortedList[key] = value;
+            }
+        }
+
+        return sortedList;
     }
 
     // 定时任务调度器
@@ -109,10 +345,19 @@ class Program
 
             // 准备消息内容
             string messageContent = "日报小助手统计";
-            string folderPath = BaseFolderName4dlyrptPart + GetTodayCodeMnsHrs(4);
+            string folderPath = BaseFolderName4dlyrptPart + GetTodayCodeMnsHrs(8);
             string alreadySendUsers = GetFileNamesAsJSONFrmFldr(folderPath);
             messageContent = $"{messageContent}\n目前已经发送的如下：\n{alreadySendUsers}";
 
+            // 发送消息到指定聊天
+            await botClient.SendTextMessageAsync(
+                chatId: chatID,
+                text: messageContent
+            );
+
+
+            string mkd2console = GetRptToday(folderPath);
+            messageContent = $"目前还没有发送的人员如下:\n" + mkd2console;
             // 发送消息到指定聊天
             await botClient.SendTextMessageAsync(
                 chatId: chatID,
@@ -502,6 +747,6 @@ class Program
 
     private static string GetTodayCode()
     {
-        return GetTodayCodeMnsHrs(4);
+        return GetTodayCodeMnsHrs(6);
     }
 }
