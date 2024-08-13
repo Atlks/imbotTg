@@ -372,6 +372,41 @@ class Program
         }
     }
 
+    public static async Task SumupDailyRptBydate(string date)
+    {
+        try
+        {
+            // 创建 Telegram Bot 客户端
+            var botClient = new TelegramBotClient(tokenbot);
+
+            // 准备消息内容
+            string messageContent = "日报小助手统计";
+            string folderPath = BaseFolderName4dlyrptPart + date;
+            string alreadySendUsers = GetFileNamesAsJSONFrmFldr(folderPath);
+            messageContent = $"{messageContent}\n目前已经发送的如下：\n{alreadySendUsers}";
+
+            // 发送消息到指定聊天
+            await botClient.SendTextMessageAsync(
+                chatId: chatID,
+                text: messageContent
+            );
+
+
+            string mkd2console = GetRptToday(folderPath);
+            messageContent = $"目前还没有发送的人员如下:\n" + mkd2console;
+            // 发送消息到指定聊天
+            await botClient.SendTextMessageAsync(
+                chatId: chatID,
+                text: messageContent
+            );
+
+            Console.WriteLine("Message sent successfully");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Failed to send message: {ex.Message}");
+        }
+    }
 
     public static async Task SendMessage4DailyRpt()
     {
@@ -519,6 +554,15 @@ class Program
             MsgHdlr(update);
         }
 
+        if( IsStartsWith( update?.Message?.Text,"/"))
+        {
+            //cmd moshi 
+            string cmdWzPrm = SubStr(update?.Message?.Text, 1);
+            string[] a = cmdWzPrm.Split(" ");
+            string cmd = a[0];
+            string methodName = "Cmd" + cmd + "Hdlr";
+            Callx(methodName, cmd, update);
+        }
 
     }
 
@@ -563,7 +607,22 @@ class Program
     {
         //  throw new NotImplementedException();
     }
+    /// <summary>
+    /// CmdrptHdlr
+    /// </summary>
+    /// <param name="cmd"></param>
+    /// <param name="update"></param>
+    /// <returns></returns>
+    public static void CmdrptHdlr(string cmd,Update update)
+    {
+        //    if(cmd=="rpt")
+        string[] a = cmd.Split(" ");
+        a = update.Message.Text.Split(" ");
+        string date = a[1];
+        SumupDailyRptBydate(date);
 
+
+    }
     private static async Task MsgHdlr(Update update)
     {
 

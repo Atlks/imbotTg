@@ -13,5 +13,12 @@ async function sleepx(ms: number) {
     console.log('Awoke after 300 seconds!');
 }
 
+import('./bscd');
+require('./bscd');
 // 执行异步任务
-sleepx(300*1000);
+sleepx(5 * 1000);
+var f = global["myFunction"]
+
+console.log(f("111"));
+//console.log(myFunction("222"))
+sleepx(500 * 1000);
