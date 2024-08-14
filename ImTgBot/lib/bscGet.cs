@@ -20,6 +20,73 @@ namespace prjx.libx
 {
     internal class bscGet
     {
+        public static HashSet<string> GetKeysAsHashSet(SortedList sortedList)
+        {
+            // 使用 HashSet 来存储并返回键集合
+            return new HashSet<string>(sortedList.Keys.Cast<string>());
+        }
+        public static string GetListKeys(SortedList sortedList)
+        {
+            //  sortedList.Keys
+            HashSet<string> keys = new HashSet<string>();
+            // 使用 StringBuilder 来提高性能
+            var sb = new System.Text.StringBuilder();
+
+            foreach (DictionaryEntry entry in sortedList)
+            {
+                // 获取键并追加到 StringBuilder
+                var key = entry.Key.ToString();
+                sb.Append(key).Append(' ');
+            }
+
+            // 移除末尾多余的空格
+            if (sb.Length > 0)
+            {
+                sb.Length--;  // 移除最后一个空格
+            }
+
+            return sb.ToString();
+        }
+
+        public static SortedList NewSortedListFrmIni(string v)
+        {
+            return GetSortedlistFrmIni(v);
+        }
+
+        public static SortedList GetSortedlistFrmIni(string filePath)
+        {
+            var sortedList = new SortedList();
+
+            if (!System.IO.File.Exists(filePath))
+            {
+                throw new FileNotFoundException("INI file not found", filePath);
+            }
+
+            var lines = System.IO.File.ReadAllLines(filePath);
+
+            foreach (var line in lines)
+            {
+                // 跳过空行和注释行
+                var trimmedLine = line.Trim();
+                if (string.IsNullOrEmpty(trimmedLine) || trimmedLine.StartsWith(";"))
+                {
+                    continue;
+                }
+
+                // 处理键值对
+                var keyValue = trimmedLine.Split('=', 2);
+                if (keyValue.Length == 2)
+                {
+                    var key = keyValue[0].Trim();
+                    var value = keyValue[1].Trim();
+
+                    sortedList[key] = value;
+                }
+            }
+
+            return sortedList;
+        }
+
         public static string GetFileNamesAsJSONFrmFldr(string folderPath)
         {
             var files = Directory.GetFiles(folderPath);

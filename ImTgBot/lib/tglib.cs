@@ -53,6 +53,163 @@ namespace prjx.libx
         public static   string tokenbot = "YOUR_BOT_API_TOKEN"; // 替换为你的 Bot API Token
         public static   string rcvmsgDir = "rcvmsgDir"; // 存储消息的目录
         public static string chatID;
+        public static void RcvMsgStart()
+        {
+
+            // 获取真实路径并打印
+            string realPath = GetRealPath($"{prjdir}/cfg/cfg.ini");
+            Console.WriteLine("GetRealPath=>" + realPath);
+
+            // 从配置文件读取字典
+            Dictionary<string, string> config = GetDicFromIni($"{prjdir}/cfg/cfg.ini");
+
+            // 如果文件不存在，使用指定路径读取配置文件
+            //if (!System.IO.File.Exists("cfg117.ini"))
+            //{
+            //    Console.WriteLine(@"GetDicFromIni D:\0prj\mdsj\codelib2023\cfg117.ini");
+            //    config = GetDicFromIni(@"D:\0prj\mdsj\codelib2023\cfg117.ini");
+            //}
+
+            // 从配置中获取 Telegram 机器人令牌
+            tokenbot = config["token"];
+            chatID = config["chatID"];
+            botClient = new TelegramBotClient(tokenbot);
+            // 发送消息
+            SendMessage("start...");
+
+            //todo here should wrt to rot ini therre..not here
+            获取机器人的信息();
+            botClient.StartReceiving(updateHandler: EvtUpdateHdlrAsyncSafe,
+                      pollingErrorHandler: tglib.bot_pollingErrorHandler,
+                      receiverOptions: new ReceiverOptions()
+                      {
+                          AllowedUpdates = System.Array.Empty<UpdateType>(),
+                          // 接收所有类型的更新
+                          //AllowedUpdates = [UpdateType.Message,
+                          //    UpdateType.CallbackQuery,
+                          //    UpdateType.ChannelPost,
+                          //    UpdateType.MyChatMember,
+                          //    UpdateType.ChatMember,
+                          //    UpdateType.ChatJoinRequest],
+                          ThrowPendingUpdates = true,
+                      });
+
+
+        }
+
+        public static async Task RcvMsgStartPullover()
+        {
+            botClient = new TelegramBotClient(tokenbot);
+
+            // 设置更新偏移量
+            int offset = 0;
+
+            while (true)
+            {
+                try
+                {
+                    // 获取更新
+                    var updates = await botClient.GetUpdatesAsync(offset);
+
+                    foreach (var update in updates)
+                    {
+                        // 更新偏移量
+                        offset = update.Id + 1;
+
+                        UpdtHdlr(update);
+
+                        if (update.Message != null && update.Message.Type == Telegram.Bot.Types.Enums.MessageType.Text)
+                        {
+                            await MsgHdlr(update);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error: {ex.Message}");
+                }
+
+                // 等待 1 秒钟再进行下一次轮询
+                await Task.Delay(1000);
+            }
+        }
+
+        public static async System.Threading.Tasks.Task EvtUpdateHdlrAsyncSafe(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
+        {
+
+
+            //  throw new Exception("myex");
+            //   call_user_func(evt_aHandleUpdateAsync, botClient, update, cancellationToken, reqThreadId)
+
+            //try todo map evt
+            callAsyncNewThrdx(() =>
+            {
+                try
+                {
+                    string reqThreadId = geneReqid();
+                    EvtUpdateHdlr(botClient, update, cancellationToken, reqThreadId);
+                    //     throw new InvalidOperationException("An error occurred in the task.");
+
+                }
+                catch (jmp2endEx e22)
+                {
+                    Print("jmp2exitEx"); Print(e22.Message); ;
+                }
+                catch (Exception e)
+                {
+                    logErr2024(e, "evt_aHandleUpdateAsyncSafe", "errlogDir", null);
+                }
+                return 0;
+
+
+            });
+            //     Task.Run(async );
+            //  int reqThreadId = Thread.CurrentThread.ManagedThreadId;
+
+
+        }
+        //收到消息时执行的方法
+        public static void EvtUpdateHdlr(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken, string reqThreadId)
+        {
+            //  throw new Exception("myex");
+
+            var __METHOD__ = nameof(EvtUpdateHdlr);
+            PrintCallFunArgs(__METHOD__, func_get_args(update));
+            logCls.log("fun " + __METHOD__, func_get_args(update), null, "logDir", reqThreadId);
+            Print(update?.Message?.Text);
+            //    tts(update?.Message?.Text);
+            // print(json_encode(update));
+            Print("tag4520");
+
+
+
+            CallAsyncNewThrd(() =>
+            {
+                Thread.Sleep(1500);
+                bot_logRcvMsg(update);
+                Thread.Sleep(6000);
+                dbgpad = 0;
+                //todo save chat sess
+            });
+
+            UpdtHdlr(update);
+
+            if (update.Message != null && update.Message.Type == Telegram.Bot.Types.Enums.MessageType.Text)
+            {
+                MsgHdlr(update);
+            }
+
+            if (IsStartsWith(update?.Message?.Text, "/"))
+            {
+                //cmd moshi 
+                string cmdWzPrm = SubStr(update?.Message?.Text, 1);
+                string[] a = cmdWzPrm.Split(" ");
+                string cmd = a[0];
+                string methodName = "Cmd" + cmd + "Hdlr";
+                Callx(methodName, cmd, update);
+            }
+
+        }
 
         public static async Task SendMessage(string messageContent)
         {
