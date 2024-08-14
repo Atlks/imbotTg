@@ -1,13 +1,13 @@
 {
-  "MessageId": 8316,
+  "MessageId": 8224,
   "MessageThreadId": null,
   "From": {
-    "Id": 879006550,
+    "Id": 6361163886,
     "IsBot": false,
-    "FirstName": "\u5341 Adam \u5927\u9C7C \u5218\u6D0B \u6C64\u59C6",
+    "FirstName": "\u8054\u4FE1-ZZ",
     "LastName": null,
-    "Username": "Xxx007865",
-    "LanguageCode": "zh-hans",
+    "Username": "LianXin_ZZ2",
+    "LanguageCode": null,
     "IsPremium": null,
     "AddedToAttachmentMenu": null,
     "CanJoinGroups": null,
@@ -15,7 +15,7 @@
     "SupportsInlineQueries": null
   },
   "SenderChat": null,
-  "Date": "2024-08-13T10:56:01Z",
+  "Date": "2024-08-12T13:48:44Z",
   "Chat": {
     "Id": -1002003939065,
     "Type": 4,
@@ -60,9 +60,41 @@
   "HasProtectedContent": null,
   "MediaGroupId": null,
   "AuthorSignature": null,
-  "Text": "\u90E8\u95E8\uFF1A\u540C\u57CE\u670D\u52A1\n\u804C\u4F4D\uFF1A \u540E\u7AEF\u5F00\u53D1\n\n### \u4E00\u3001\u4ECA\u65E5\u5DE5\u4F5C\u5185\u5BB9\n\n813\u8BB0\u5F55\n\u4FEE\u590D\u82E5\u5E72bug   \u5B8C\u5584\u82E5\u5E72\u5C0F\u95EE\u9898\n\u6301\u7EED\u63A8\u8FDBweb\u9879\u76EE\uFF0C\u548C\u963F\u6B22\u6C9F\u901A\u53CD\u9988 \u6301\u7EED\u4F18\u5316\u5B8C\u5584\u8C03\u6574\u4FEE\u590Dbug\n\u65E5\u62A5\u673A\u5668\u4EBA\u8FDB\u4E00\u6B65\u8C03\u6574\u5B8C\u5584\n \u7EE7\u7EED\u4F18\u5316\u7B80\u5316\u4EE3\u7801\u7ED3\u6784 \u3002\u67B6\u6784\u4EE3\u7801\u5B8C\u5584 \n \n### \u4E8C\u3001\u4ECA\u65E5\u5DE5\u4F5C\u4EAE\u70B9\n  ### \u4E09\u3001\u9047\u5230\u7684\u95EE\u9898\u53CA\u89E3\u51B3\u65B9\u6848 \n ### \u56DB\u3001\u9700\u8981\u7684\u652F\u6301\u4E0E\u5E2E\u52A9",
-  "Entities": null,
-  "EntityValues": null,
+  "Text": "\u90E8\u95E8\uFF1A\u540C\u57CE\u670D\u52A1\n\u804C\u4F4D\uFF1A\u524D\u7AEF\u5F00\u53D1\n\n### \u4E00\u3001\u4ECA\u65E5\u5DE5\u4F5C\u5185\u5BB9\n\n1. \u4EFB\u52A1\u4E00\uFF1A \u641C\u7D22\u7EC4\u4EF6\u91CD\u6784\n   - \u63CF\u8FF0\uFF1A\u5B8C\u6210\u641C\u7D22\u7EC4\u4EF6\u91CD\u6784\uFF0C\u53EF\u4EE5\u591A\u56FD\u5BB6\u3001\u591A\u57CE\u5E02\u53CA\u591A\u56ED\u533A\u641C\u7D22\uFF0C\u5E76\u6309\u7167\u7EA7\u8054\u5173\u7CFB\u5C55\u793A\uFF0C\u53D1\u9001\u63A5\u53E3\u65F6\u8F6C\u5316\u4E3A\u89C4\u5B9A\u683C\u5F0F\u3002\u7F16\u8F91\u9875\u9762\u5730\u533A\u9009\u62E9\u4FEE\u6539\u4E3A\u4F7F\u7528\u65B0\u7684\u6570\u636E\u7ED3\u6784\n   - \u5B8C\u6210\u60C5\u51B5\uFF1A100%\n\n### \u4E8C\u3001\u4ECA\u65E5\u5DE5\u4F5C\u4EAE\u70B9\n### \u4E09\u3001\u9047\u5230\u7684\u95EE\u9898\u53CA\u89E3\u51B3\u65B9\u6848\n### \u56DB\u3001\u9700\u8981\u7684\u652F\u6301\u4E0E\u5E2E\u52A9",
+  "Entities": [
+    {
+      "Type": 6,
+      "Offset": 0,
+      "Length": 3,
+      "Url": null,
+      "User": null,
+      "Language": null,
+      "CustomEmojiId": null
+    },
+    {
+      "Type": 6,
+      "Offset": 8,
+      "Length": 3,
+      "Url": null,
+      "User": null,
+      "Language": null,
+      "CustomEmojiId": null
+    },
+    {
+      "Type": 6,
+      "Offset": 34,
+      "Length": 4,
+      "Url": null,
+      "User": null,
+      "Language": null,
+      "CustomEmojiId": null
+    }
+  ],
+  "EntityValues": [
+    "\u90E8\u95E8\uFF1A",
+    "\u804C\u4F4D\uFF1A",
+    "\u4EFB\u52A1\u4E00\uFF1A"
+  ],
   "Animation": null,
   "Audio": null,
   "Document": null,

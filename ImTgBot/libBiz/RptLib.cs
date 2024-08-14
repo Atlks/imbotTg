@@ -131,8 +131,10 @@ namespace libBiz
                 var botClient = new TelegramBotClient(tokenbot);
 
                 // 准备消息内容
-                string messageContent = "日报小助手统计";
-                string folderPath = BaseFolderName4dlyrptPart + GetTodayCodeMnsHrs(8);
+              
+                string dt = GetTodayCodeMnsHrs(8);
+                string messageContent = "日报小助手统计"+dt;
+                string folderPath = BaseFolderName4dlyrptPart + dt;
                 string alreadySendUsers = GetFileNamesAsJSONFrmFldr(folderPath);
                 //     messageContent = $"{messageContent}\n目前已经发送的如下：\n{alreadySendUsers}";
 
@@ -167,7 +169,7 @@ namespace libBiz
                 var botClient = new TelegramBotClient(tokenbot);
 
                 // 准备消息内容
-                string messageContent = "日报小助手统计";
+                string messageContent = "日报小助手统计周期"+date;
                 string folderPath = BaseFolderName4dlyrptPart + date;
                 string alreadySendUsers = GetFileNamesAsJSONFrmFldr(folderPath);
                 //      messageContent = $"{messageContent}\n目前已经发送的如下：\n{alreadySendUsers}";
@@ -239,7 +241,37 @@ namespace libBiz
             return mkd2console;
         }
 
+        /// <summary>
+        ///   Render(tmple(title,rowRender)   ,dataList)
+        /// </summary>
+        /// <param name="sortedList"></param>
+        /// <param name="title"></param>
+        /// <param name="rendRowFun"></param>
+        /// <returns></returns>
+        public static string FormatListToMarkdown(List<SortedList> sortedList,string title,Func<SortedList,string> rendRowFun)
+        {
+            var sb = new StringBuilder();
 
+            // 添加表头
+          //  sb.AppendLine("| uid      | name     | demo|");
+            sb.Append(title);
+            
+        //    sb.AppendLine("|----------|-----------|--------|");
+
+            foreach(SortedList row in sortedList)
+            {
+                sb.AppendLine(rendRowFun(row));
+            }
+            // 遍历 SortedList 并添加到 Markdown 表格
+            //foreach (DictionaryEntry entry in sortedList)
+            //{
+            //    string key = (string)entry.Key;
+            //    string value = (string)entry.Value;
+             
+            //}
+
+            return sb.ToString();
+        }
 
         public static string FormatSortedListToMarkdown(SortedList sortedList)
         {

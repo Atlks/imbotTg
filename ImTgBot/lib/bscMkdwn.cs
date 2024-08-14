@@ -2,10 +2,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace  libx
+namespace libx
 {
     internal class bscMkdwn
     {
@@ -24,7 +25,7 @@ namespace  libx
             var columnWidths = CalculateColumnWidths(lines);
 
             // 打印格式化表格
-        return    PrintFormattedTable(lines, columnWidths);
+            return PrintFormattedTable(lines, columnWidths);
         }
 
         private static int[] CalculateColumnWidths(string[] lines)
@@ -40,16 +41,25 @@ namespace  libx
             // 计算每列的最大宽度
             var columnWidths = headers.Select(header => header.Trim().Length).ToArray();
 
+            //for data row ,so skip2
             foreach (var line in lines.Skip(2))
             {
                 var columns = line.Split('|').Skip(1).TakeWhile(s => !string.IsNullOrWhiteSpace(s)).ToArray();
                 for (int i = 0; i < columns.Length; i++)
                 {
-                    var columnWidth = columns[i].Trim().Length;
-                    if (columnWidth > columnWidths[i])
+                    try
                     {
-                        columnWidths[i] = columnWidth;
+                        var columnWidth = columns[i].Trim().Length;
+                        if (columnWidth > columnWidths[i])
+                        {
+                            columnWidths[i] = columnWidth;
+                        }
                     }
+                    catch (Exception e)
+                    {
+                        Print(e);
+                    }
+
                 }
             }
 
@@ -66,16 +76,42 @@ namespace  libx
 
             // 打印分隔线
             var separatorLine = lines[1].Split('|').Skip(1).TakeWhile(s => !string.IsNullOrWhiteSpace(s)).ToArray();
-            sb.AppendLine(string.Join(" | ", separatorLine.Select((sep, index) => new string('-', columnWidths[index]))));
+            IEnumerable<string> values = separatorLine.Select(
+                (sep, index) =>
+                {
+                    try
+                    {
+                        return new string('-', columnWidths[index]);
+                    }
+                    catch (Exception e)
+                    {
+                        return new string('-', 3);
+                    }
+
+                }
+            );
+            sb.AppendLine(string.Join(" | ", values));
 
             // 打印表格内容
             foreach (var line in lines.Skip(2))
             {
                 var columns = line.Split('|').Skip(1).TakeWhile(s => !string.IsNullOrWhiteSpace(s)).ToArray();
-                sb.AppendLine(string.Join(" | ", columns.Select((column, index) => column.Trim().PadRight(columnWidths[index]))));
+                IEnumerable<string> values1 = columns.Select(
+                    (column, index) => {
+                        try
+                        {
+                            return column.Trim().PadRight(columnWidths[index]);
+                        }catch(Exception e)
+                        {
+                            return column.Trim().PadRight(3);
+                        }
+                        
+                    }
+                );
+                sb.AppendLine(string.Join(" | ", values1));
             }
 
-            Console.WriteLine(sb.ToString());
+            //    Console.WriteLine(sb.ToString());
             return sb.ToString();
         }
     }
