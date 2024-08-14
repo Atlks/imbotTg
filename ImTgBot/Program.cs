@@ -372,7 +372,7 @@ class Program
         }
     }
 
-    public static async Task SumupDailyRptBydate(string date,string chatID)
+    public static async Task SumupDailyRptBydate(string date,string chatID22)
     {
         try
         {
@@ -386,17 +386,18 @@ class Program
       //      messageContent = $"{messageContent}\n目前已经发送的如下：\n{alreadySendUsers}";
 
             // 发送消息到指定聊天
-            await botClient.SendTextMessageAsync(
-                chatId: chatID,
-                text: messageContent
-            );
+            //await botClient.SendTextMessageAsync(
+            //    chatId: chatID,
+            //    text: messageContent
+            //);
 
 
             string mkd2console = GetRptToday(folderPath);
-            messageContent = $"目前还没有发送的人员如下:\n" + mkd2console;
+            messageContent = $"{messageContent}\n目前还没有发送的人员如下:\n" +
+                $"\n" + mkd2console;
             // 发送消息到指定聊天
             await botClient.SendTextMessageAsync(
-                chatId: chatID,
+                chatId: chatID22,
                 text: messageContent
             );
 
@@ -615,6 +616,7 @@ class Program
     /// <returns></returns>
     public static void CmdrptHdlr(string cmd,Update update)
     {
+        SleepSec(5);//for test lev
         //    if(cmd=="rpt")
         string[] a = cmd.Split(" ");
         a = update.Message.Text.Split(" ");
@@ -648,7 +650,7 @@ class Program
 
         //------------------------today wk rpt
         // 检查消息内容是否包含 "今日工作内容"
-        if (message.Text.Contains("今日工作内容"))
+        if (message.Text.Contains("今日工作亮点"))
         {
             try
             {
