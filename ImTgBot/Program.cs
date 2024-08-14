@@ -20,7 +20,7 @@ using Telegram.Bot.Types.Enums;
 
 class Program
 {
- 
+
 
 
 
@@ -53,7 +53,7 @@ class Program
         //string folderPath = $"{prjdir}/db/dlyrpt0812";
         //string mkd2console = GetRptToday(folderPath);
         //Print(mkd2console);
-      //  RptConsecutiveMissingDays();
+        //  RptConsecutiveMissingDays();
 
         Main2024(() =>
         {
@@ -70,10 +70,16 @@ class Program
             ScheduleDailyTask(22, 30, SendMessage4DailyRpt);
             ScheduleDailyTask(23, 55, SendMessage4DailyRpt);
 
-            ScheduleDailyTask(4, 00, SumupDailyRpt);
+            ScheduleDailyTask(3, 50, SumupDailyRpt);
+            ScheduleDailyTask(4, 00, RptConsecutiveMissingDays);
 
             if (IsExistFil("c:/teststart.txt"))
-                ScheduleDailyTask(15, 40, SumupDailyRpt);//test
+            {
+                ScheduleDailyTask(16, 17, SumupDailyRpt);//test
+
+                ScheduleDailyTask(16, 36, RptConsecutiveMissingDays);//test
+            }
+
         });
 
     }
@@ -82,7 +88,7 @@ class Program
         SortedList inimap = NewSortedListFrmIni($"{prjdir}/cfg/mem.ini");
         HashSet<string> ids = GetKeysAsHashSet(inimap);
         List<SortedList> li = new List<SortedList>();
-        string month="";
+        string month = "";
         foreach (string id in ids)
         {
             if (id == "6436991688")
@@ -91,114 +97,55 @@ class Program
             string todaycode = GetTodayCode();
             //if (IsExistFilNameStartWz(todaycode, dbfld))
             //    continue;
-              month = "2024" + Left(todaycode, 2);
+            month = "2024" + Left(todaycode, 2);
 
             //有确实的了consct miss
             int missdays = 0;
             try
             {
                 missdays = calcCountByMonthByUid(month, dbfld);
-            }catch(Exception e)
+            }
+            catch (Exception e)
             {
                 Print(e);
             }
-          
+
             SortedList o = new SortedList();
-            o.Add("uid", id);
-            o.Add("name", inimap[id]);
+
             o.Add("缺失天数", missdays);
-
-            li.Add(o);
-        }
-        Print(EncodeJsonFmt(li));
-
-        string title = $"|uid|缺失天数|name|\n|-----|-----|---|\n";
-        Hashtable tmpltMkdwn = new Hashtable();
-        tmpltMkdwn.Add(render_title_table, title);
-        tmpltMkdwn.Add(render_rowRender, (SortedList row) =>
-        {
-            return "|" + row["uid"].ToString() + "|" + row["缺失天数"].ToString() + "|" + row["name"].ToString() + "|";
-        });
-
-        string mkdwn2 = RenderTable(li, tmpltMkdwn);
-
-        //string mkdwn = FormatListToMarkdown(li, title, (row) =>
-        //        {
-        //            return "|" + row["uid"].ToString() + "|" + row["连续缺失天数"].ToString() + "|" + row["name"].ToString() + "|";
-        //        });
-        Print(mkdwn2);
-
-        string mkd2console = FormatAndPrintMarkdownTable(mkdwn2);
-        Print($"|{month}|\n"+mkd2console);
-    }
-
-    private static void RptConsecutiveMissingDays()
-    {
-        SortedList inimap = NewSortedListFrmIni($"{prjdir}/cfg/mem.ini");
-        HashSet<string> ids = GetKeysAsHashSet(inimap);
-        List<SortedList> li = new List<SortedList>();
-        foreach (string id in ids)
-        {
-            if (id == "6436991688")
-                Print("dbf202");
-            string dbfld = $"{prjdir}/db/dlyrptUid" + id;
-            string todaycode = GetTodayCode();
-            if (IsExistFilNameStartWz(todaycode, dbfld))
-                continue;
-
-            //有确实的了consct miss
-            int missdays = clalcMissdays(todaycode, dbfld);
-            SortedList o = new SortedList();
-            o.Add("uid", id);
+            o.Add("id", id);
             o.Add("name", inimap[id]);
-            o.Add("连续缺失天数", missdays);
+          
 
             li.Add(o);
         }
         Print(EncodeJsonFmt(li));
 
-        string title = "|uid|连续缺失天数|name|\n|-----|-----|---|\n";
-        Hashtable tmpltMkdwn = new Hashtable();
-        tmpltMkdwn.Add(render_title_table, title);
-        tmpltMkdwn.Add(render_rowRender, (SortedList row) =>
-        {
-            return "|" + row["uid"].ToString() + "|" + row["连续缺失天数"].ToString() + "|" + row["name"].ToString() + "|";
-        });
+        //string title = $"|uid|缺失天数|name|\n|-----|-----|---|\n";
+        //Hashtable tmpltMkdwn = new Hashtable();
+        //tmpltMkdwn.Add(render_title_table, title);
+        //tmpltMkdwn.Add(render_rowRender, (SortedList row) =>
+        //{
+        //    return "|" + row["uid"].ToString() + "|" + row["缺失天数"].ToString() + "|" + row["name"].ToString() + "|";
+        //});
 
-        string mkdwn2 = RenderTable(li, tmpltMkdwn);
+        //string mkdwn2 = RenderTable(li, tmpltMkdwn);
 
         //string mkdwn = FormatListToMarkdown(li, title, (row) =>
         //        {
         //            return "|" + row["uid"].ToString() + "|" + row["连续缺失天数"].ToString() + "|" + row["name"].ToString() + "|";
         //        });
+
+        string mkdwn2 = ConvertToMarkdown(li);
         Print(mkdwn2);
 
+        Print("--------------------------------");
         string mkd2console = FormatAndPrintMarkdownTable(mkdwn2);
-        Print(mkd2console);
+        Print($"|{month}|\n" + mkd2console);
     }
 
-  
-    // 将 yyyyMMdd 格式的字符串转换为 DateTime 类型
-    public static DateTime ConvertToDateTime(string dateString)
-    {
-        if (string.IsNullOrWhiteSpace(dateString))
-        {
-            throw new ArgumentException("日期字符串不能为空或只包含空白字符。", nameof(dateString));
-        }
 
-        // 定义日期格式
-        const string format = "yyyyMMdd";
 
-        // 尝试将字符串转换为 DateTime 类型
-        if (DateTime.TryParseExact(dateString, format, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime result))
-        {
-            return result;
-        }
-        else
-        {
-            throw new FormatException($"无法将字符串 '{dateString}' 转换为 {format} 格式的日期。");
-        }
-    }
 
     /// <summary>
     /// 
@@ -210,11 +157,11 @@ class Program
     {
         int padd = 16;
         if (!Directory.Exists(dbfld))
-            return 30-padd - DateTime.Now.Day;
+            return 30 - padd - DateTime.Now.Day;
         var files = Directory.GetFiles(dbfld);
         int countDays = 0;
         string yymmdd = "2024" + month;
-        DateTime curdate = ConvertToDateTime(month+"01");
+        DateTime curdate = ConvertToDateTime(month + "01");
         int maxday = GetMaxDaysOfMonth(month);
         for (int i = 1; i < maxday; i++)
         {
@@ -224,18 +171,18 @@ class Program
             if (IsExistFilNameStartWz(curdateCode, dbfld))
             {
                 countDays++;
-              
+
             }
             curdate = curdate.AddDays(1);
 
 
         }
-        return maxday- DateTime .Now.Day- countDays- padd;
+        return maxday - DateTime.Now.Day - countDays - padd;
 
 
     }
 
-    private static int clalcMissdays(string todaycode, string dbfld)
+    public static int clalcMissdays(string todaycode, string dbfld)
     {
         if (!Directory.Exists(dbfld))
             return 30;
@@ -262,24 +209,8 @@ class Program
 
     }
 
-    private static string FmtDateMMDD(DateTime curdate)
-    {
-        return curdate.ToString("MMdd");
-    }
 
-    private static bool IsExistFilNameStartWz(string todaycode, string dbfld)
-    {
-        if (!Directory.Exists(dbfld))
-            return false;
-        var files = Directory.GetFiles(dbfld);
-        foreach (string f in files)
-        {
-            string basename = Path.GetFileName(f);
-            if (basename.StartsWith(todaycode))
-                return true;
-        }
-        return false;
-    }
+
 
 
 
@@ -352,7 +283,7 @@ class Program
         Console.WriteLine($"Message saved to {filePath}");
     }
 
-    private static async Task AddDlyrpt(Message? message)
+    public static async Task AddDlyrpt(Message? message)
     {
         //------------------------today wk rpt
         // 检查消息内容是否包含 "今日工作内容"

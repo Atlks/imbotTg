@@ -14,6 +14,73 @@ namespace libBiz
     internal class RptLib
     {
         public const string BaseFolderName4dlyrptPart = "../../../db/dlyrpt";
+
+        public static void RptConsecutiveMissingDays()
+        {
+            SortedList inimap = NewSortedListFrmIni($"{prjdir}/cfg/mem.ini");
+            HashSet<string> ids = GetKeysAsHashSet(inimap);
+            List<SortedList> li = new List<SortedList>();
+            foreach (string id in ids)
+            {
+                if (id == "6436991688")
+                    Print("dbf202");
+                string dbfld = $"{prjdir}/db/dlyrptUid" + id;
+                string todaycode = GetTodayCode();
+                if (IsExistFilNameStartWz(todaycode, dbfld))
+                    continue;
+
+                //有确实的了consct miss
+                int missdays = clalcMissdays(todaycode, dbfld);
+                SortedList o = new SortedList();
+                o.Add("uid", id);
+                o.Add("name", inimap[id]);
+                o.Add("连续缺失天数", missdays);
+
+                li.Add(o);
+            }
+            Print(EncodeJsonFmt(li));
+
+            string title = "|uid|连续缺失天数|name|\n|-----|-----|---|\n";
+            Hashtable tmpltMkdwn = new Hashtable();
+            tmpltMkdwn.Add(render_title_table, title);
+            tmpltMkdwn.Add(render_rowRender, (SortedList row) =>
+            {
+                return "|☀️" + row["uid"].ToString() + "|" + row["连续缺失天数"].ToString() + "|" + row["name"].ToString() + "|";
+            });
+
+            string mkdwn2 = RenderTable(li, tmpltMkdwn);
+
+            //string mkdwn = FormatListToMarkdown(li, title, (row) =>
+            //        {
+            //            return "|" + row["uid"].ToString() + "|" + row["连续缺失天数"].ToString() + "|" + row["name"].ToString() + "|";
+            //        });
+            Print(mkdwn2);
+
+            string mkd2console = FormatAndPrintMarkdownTable(mkdwn2);
+            Print(mkd2console);
+
+            string messageContent = $"连续缺失日报的统计如下:\n" + mkd2console;
+            // 发送消息到指定聊天
+            Sendmsg(chatID, messageContent);
+
+        }
+
+        public static void Sendmsg(string chatID, string messageContent)
+        {
+            try
+            {
+                botClient.SendTextMessageAsync(
+                               chatId: chatID,
+                               text: messageContent
+                           ).GetAwaiter().GetResult();
+            }
+            catch (Exception e)
+            {
+                PrintCatchEx("sendmgs", e);
+            }
+
+        }
+
         public static void SaveMessageToFile4Dlyrpt(Message message)
         {
             // 实际实现保存消息到文件
@@ -131,9 +198,9 @@ namespace libBiz
                 var botClient = new TelegramBotClient(tokenbot);
 
                 // 准备消息内容
-              
+
                 string dt = GetTodayCodeMnsHrs(8);
-                string messageContent = "日报小助手统计"+dt;
+                string messageContent = "日报小助手统计" + dt;
                 string folderPath = BaseFolderName4dlyrptPart + dt;
                 string alreadySendUsers = GetFileNamesAsJSONFrmFldr(folderPath);
                 //     messageContent = $"{messageContent}\n目前已经发送的如下：\n{alreadySendUsers}";
@@ -169,7 +236,7 @@ namespace libBiz
                 var botClient = new TelegramBotClient(tokenbot);
 
                 // 准备消息内容
-                string messageContent = "日报小助手统计周期"+date;
+                string messageContent = "日报小助手统计周期" + date;
                 string folderPath = BaseFolderName4dlyrptPart + date;
                 string alreadySendUsers = GetFileNamesAsJSONFrmFldr(folderPath);
                 //      messageContent = $"{messageContent}\n目前已经发送的如下：\n{alreadySendUsers}";
@@ -248,17 +315,17 @@ namespace libBiz
         /// <param name="title"></param>
         /// <param name="rendRowFun"></param>
         /// <returns></returns>
-        public static string FormatListToMarkdown(List<SortedList> sortedList,string title,Func<SortedList,string> rendRowFun)
+        public static string FormatListToMarkdown(List<SortedList> sortedList, string title, Func<SortedList, string> rendRowFun)
         {
             var sb = new StringBuilder();
 
             // 添加表头
-          //  sb.AppendLine("| uid      | name     | demo|");
+            //  sb.AppendLine("| uid      | name     | demo|");
             sb.Append(title);
-            
-        //    sb.AppendLine("|----------|-----------|--------|");
 
-            foreach(SortedList row in sortedList)
+            //    sb.AppendLine("|----------|-----------|--------|");
+
+            foreach (SortedList row in sortedList)
             {
                 sb.AppendLine(rendRowFun(row));
             }
@@ -267,7 +334,7 @@ namespace libBiz
             //{
             //    string key = (string)entry.Key;
             //    string value = (string)entry.Value;
-             
+
             //}
 
             return sb.ToString();

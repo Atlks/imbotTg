@@ -1,6 +1,7 @@
 ﻿global using static libx.datetime;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,6 +10,33 @@ namespace libx
 {
     internal class datetime
     {
+        public static string FmtDateMMDD(DateTime curdate)
+        {
+            return curdate.ToString("MMdd");
+        }
+
+
+        // 将 yyyyMMdd 格式的字符串转换为 DateTime 类型
+        public static DateTime ConvertToDateTime(string dateString)
+        {
+            if (string.IsNullOrWhiteSpace(dateString))
+            {
+                throw new ArgumentException("日期字符串不能为空或只包含空白字符。", nameof(dateString));
+            }
+
+            // 定义日期格式
+            const string format = "yyyyMMdd";
+
+            // 尝试将字符串转换为 DateTime 类型
+            if (DateTime.TryParseExact(dateString, format, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime result))
+            {
+                return result;
+            }
+            else
+            {
+                throw new FormatException($"无法将字符串 '{dateString}' 转换为 {format} 格式的日期。");
+            }
+        }
         public static int GetMaxDaysOfMonth(string yyyymm)
         {
             // 确保输入格式正确

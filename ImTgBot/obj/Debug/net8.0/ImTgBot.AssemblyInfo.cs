@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ImTgBot")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+103428b0d98a41d33db608435f1d9bd2ea33123a")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ef2fa6005a40f1f698a62522ba5d8b8502704dfe")]
 [assembly: System.Reflection.AssemblyProductAttribute("ImTgBot")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ImTgBot")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

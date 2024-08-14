@@ -15,6 +15,20 @@ namespace prjx.libx
 {
     internal class bscIsCmp
     {
+        public static bool IsExistFilNameStartWz(string todaycode, string dbfld)
+        {
+            if (!Directory.Exists(dbfld))
+                return false;
+            var files = Directory.GetFiles(dbfld);
+            foreach (string f in files)
+            {
+                string basename = Path.GetFileName(f);
+                if (basename.StartsWith(todaycode))
+                    return true;
+            }
+            return false;
+        }
+
         public static bool IsString(object input)
         {
             return input is string;

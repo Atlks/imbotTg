@@ -1,5 +1,6 @@
 ﻿global using static libx.bscMkdwn;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -64,6 +65,48 @@ namespace libx
             }
 
             return columnWidths;
+        }
+
+
+        public static string ConvertToMarkdown(List<SortedList> list)
+        {
+            if (list == null || list.Count == 0)
+            {
+                return string.Empty;
+            }
+
+            // 获取表头
+            var headers = new List<string>();
+            SortedList entriesMapRow = list[0];
+            foreach (DictionaryEntry entry in entriesMapRow)
+            {
+                headers.Add(entry.Key.ToString());
+            }
+
+            // 创建表头行
+            var sb = new StringBuilder();
+            sb.AppendLine("| " + string.Join(" | ", headers) + " |");
+            sb.AppendLine("|" + string.Join("|", new string[headers.Count].Select(_ => " --- ")) + "|");
+
+            // 添加数据行
+            foreach (var sortedList in list)
+            {
+                var row = new List<string>();
+                foreach (var header in headers)
+                {
+                    if (sortedList.ContainsKey(header))
+                    {
+                        row.Add(sortedList[header]?.ToString() ?? string.Empty);
+                    }
+                    else
+                    {
+                        row.Add(string.Empty);
+                    }
+                }
+                sb.AppendLine("| " + string.Join(" | ", row) + " |");
+            }
+
+            return sb.ToString();
         }
 
         private static string PrintFormattedTable(string[] lines, int[] columnWidths)
