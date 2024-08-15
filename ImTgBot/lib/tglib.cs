@@ -237,6 +237,23 @@ namespace prjx.libx
                 Console.WriteLine($"Failed to send message: {ex.Message}");
             }
         }
+
+        public static void Sendmsg(string chatID, string messageContent)
+        {
+            try
+            {
+                botClient.SendTextMessageAsync(
+                               chatId: chatID,
+                               text: messageContent
+                           ).GetAwaiter().GetResult();
+            }
+            catch (Exception e)
+            {
+                PrintCatchEx("sendmgs", e);
+            }
+
+        }
+
         public static async Task 获取机器人的信息()
         {
             try

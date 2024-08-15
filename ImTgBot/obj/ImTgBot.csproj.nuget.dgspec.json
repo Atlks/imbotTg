@@ -54,6 +54,10 @@
               "target": "Package",
               "version": "[1.0.2, )"
             },
+            "Handlebars.Net": {
+              "target": "Package",
+              "version": "[2.1.6, )"
+            },
             "HtmlAgilityPack": {
               "target": "Package",
               "version": "[1.11.62, )"
@@ -77,6 +81,10 @@
             "Microsoft.Extensions.Caching.Memory": {
               "target": "Package",
               "version": "[8.0.0, )"
+            },
+            "Mustache": {
+              "target": "Package",
+              "version": "[1.0.1, )"
             },
             "NCrontab": {
               "target": "Package",

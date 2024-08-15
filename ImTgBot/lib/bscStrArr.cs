@@ -11,6 +11,18 @@ namespace prjx.libx
 {
     internal class bscStrArr
     {
+
+        public static string[] SliceStrArr(string[] originalArray, int startIndex, int closetagIdx)
+        {
+            //  int startIndex = 1;  // 开始索引
+            int length = closetagIdx - startIndex;      // 长度
+            if (length < 0)
+                return new string[0];
+            string[] subArray = new string[length];
+            Array.Copy(originalArray, startIndex, subArray, 0, length);
+            return subArray;
+        }
+
         private static string SubtractFrmFilist(string ids, string jsonArray)
         {
             // 将 JSON 数组字符串转换为 List<string>

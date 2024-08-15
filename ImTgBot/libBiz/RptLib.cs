@@ -1,14 +1,18 @@
 ﻿global using static libBiz.RptLib;
+using HandlebarsDotNet;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Web;
 using Telegram.Bot;
 using Telegram.Bot.Types;
-
+using static System.Runtime.InteropServices.JavaScript.JSType;
+ 
 namespace libBiz
 {
     internal class RptLib
@@ -17,70 +21,199 @@ namespace libBiz
 
         public static void RptConsecutiveMissingDays()
         {
+            weekendChk();
             SortedList inimap = NewSortedListFrmIni($"{prjdir}/cfg/mem.ini");
             HashSet<string> ids = GetKeysAsHashSet(inimap);
             List<SortedList> li = new List<SortedList>();
+            foreach (string id in ids)
+            {
+                try
+                {
+                    if (id == "6436991688")
+                        Print("dbf202");
+                    string dbfld = $"{prjdir}/db/dlyrptUid" + id;
+                    string todaycode = GetTodayCode();
+                    if (IsExistFilNameStartWz(todaycode, dbfld))
+                        continue;
+
+                    //有确实的了consct miss
+                    int missdays = clalcMissdays(todaycode, dbfld);
+                    SortedList o = new SortedList();
+                    o.Add("uid", id);
+                    o.Add("name", inimap[id]);
+                    o.Add("连续缺失天数", "☀️" + missdays);
+
+                    li.Add(o);
+                }
+                catch (Exception e)
+                {
+                    PrintExcept("RptConsecutiveMissingDays.forBlk", e);
+                }
+
+            }
+            Print(EncodeJsonFmt(li));
+
+        //    rendTest(li);
+
+            string mkdwn2 = ConvertToMarkdown(li);
+            Print(mkdwn2);
+
+
+            //-----------rend to consle
+            string mkd2console = FormatAndPrintMarkdownTable(mkdwn2);
+            Print(mkd2console);
+            var tmpltf = $"{prjdir}/cfg/csctv_lyesyvMiss_tmplt.md";
+            Hashtable ht = new Hashtable();
+            ht["tb1142"] = mkd2console;
+            ht["dt"] = GetTodayCode();
+
+
+
+            string messageContent = RendMD(ht, tmpltf);
+            Print(messageContent);
+            // 发送消息到指定聊天
+            Sendmsg(chatID, messageContent);
+
+        }
+
+     
+      
+    
+       
+        public static void RptMonth()
+        {
+            SortedList inimap = NewSortedListFrmIni($"{prjdir}/cfg/mem.ini");
+            HashSet<string> ids = GetKeysAsHashSet(inimap);
+            List<SortedList> li = new List<SortedList>();
+            string month = "";
             foreach (string id in ids)
             {
                 if (id == "6436991688")
                     Print("dbf202");
                 string dbfld = $"{prjdir}/db/dlyrptUid" + id;
                 string todaycode = GetTodayCode();
-                if (IsExistFilNameStartWz(todaycode, dbfld))
-                    continue;
+                //if (IsExistFilNameStartWz(todaycode, dbfld))
+                //    continue;
+                month = "2024" + Left(todaycode, 2);
 
                 //有确实的了consct miss
-                int missdays = clalcMissdays(todaycode, dbfld);
+                int missdays = 0;
+                try
+                {
+                    missdays = calcCountByMonthByUid(month, dbfld);
+                }
+                catch (Exception e)
+                {
+                    Print(e);
+                }
+
                 SortedList o = new SortedList();
-                o.Add("uid", id);
+
+                o.Add("缺失天数", missdays);
+                o.Add("id", id);
                 o.Add("name", inimap[id]);
-                o.Add("连续缺失天数", missdays);
+
 
                 li.Add(o);
             }
             Print(EncodeJsonFmt(li));
 
-            string title = "|uid|连续缺失天数|name|\n|-----|-----|---|\n";
-            Hashtable tmpltMkdwn = new Hashtable();
-            tmpltMkdwn.Add(render_title_table, title);
-            tmpltMkdwn.Add(render_rowRender, (SortedList row) =>
-            {
-                return "|☀️" + row["uid"].ToString() + "|" + row["连续缺失天数"].ToString() + "|" + row["name"].ToString() + "|";
-            });
+            //string title = $"|uid|缺失天数|name|\n|-----|-----|---|\n";
+            //Hashtable tmpltMkdwn = new Hashtable();
+            //tmpltMkdwn.Add(render_title_table, title);
+            //tmpltMkdwn.Add(render_rowRender, (SortedList row) =>
+            //{
+            //    return "|" + row["uid"].ToString() + "|" + row["缺失天数"].ToString() + "|" + row["name"].ToString() + "|";
+            //});
 
-            string mkdwn2 = RenderTable(li, tmpltMkdwn);
+            //string mkdwn2 = RenderTable(li, tmpltMkdwn);
 
             //string mkdwn = FormatListToMarkdown(li, title, (row) =>
             //        {
             //            return "|" + row["uid"].ToString() + "|" + row["连续缺失天数"].ToString() + "|" + row["name"].ToString() + "|";
             //        });
+
+            string mkdwn2 = ConvertToMarkdown(li);
             Print(mkdwn2);
 
+            Print("--------------------------------");
             string mkd2console = FormatAndPrintMarkdownTable(mkdwn2);
-            Print(mkd2console);
+            Print($"|{month}|\n" + mkd2console);
+        }
 
-            string messageContent = $"连续缺失日报的统计如下:\n" + mkd2console;
-            // 发送消息到指定聊天
-            Sendmsg(chatID, messageContent);
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="month">202408</param>
+        /// <param name="dbfld"></param>
+        /// <returns></returns>
+        public static int calcCountByMonthByUid(string month, string dbfld)
+        {
+            int padd = 16;
+            if (!Directory.Exists(dbfld))
+                return 30 - padd - DateTime.Now.Day;
+            var files = Directory.GetFiles(dbfld);
+            int countDays = 0;
+            string yymmdd = "2024" + month;
+            DateTime curdate = ConvertToDateTime(month + "01");
+            int maxday = GetMaxDaysOfMonth(month);
+            for (int i = 1; i < maxday; i++)
+            {
+                string curdateCode = FmtDateMMDD(curdate);
+                if (curdateCode == "0813")
+                    Print("dg323");
+                if (IsExistFilNameStartWz(curdateCode, dbfld))
+                {
+                    countDays++;
+
+                }
+                curdate = curdate.AddDays(1);
+
+
+            }
+            return maxday - DateTime.Now.Day - countDays - padd;
+
 
         }
 
-        public static void Sendmsg(string chatID, string messageContent)
+        public static int clalcMissdays(string todaycode, string dbfld)
         {
             try
             {
-                botClient.SendTextMessageAsync(
-                               chatId: chatID,
-                               text: messageContent
-                           ).GetAwaiter().GetResult();
-            }
-            catch (Exception e)
+                if (!Directory.Exists(dbfld))
+                    return 30;
+                var files = Directory.GetFiles(dbfld);
+                int missdays = 0;
+                string yymmdd = "2024" + todaycode;
+                DateTime curdate = ConvertToDateTime(yymmdd);
+                for (int i = 0; i < 30; i++)
+                {
+                    string curdateCode = FmtDateMMDD(curdate);
+                    if (!IsExistFilNameStartWz(curdateCode, dbfld))
+                    {
+                        missdays++;
+                        // 当前时间减去一天
+                        curdate = curdate.AddDays(-1);
+                        //   curdate =
+                    }
+                    else
+                        return missdays;
+
+                }
+                return missdays;
+            }catch(Exception e)
             {
-                PrintCatchEx("sendmgs", e);
+                PrintExcept("calcCountByMonthByUid", e);
+                return 0;
             }
+          
+
 
         }
 
+
+
+      
         public static void SaveMessageToFile4Dlyrpt(Message message)
         {
             // 实际实现保存消息到文件
@@ -169,6 +302,65 @@ namespace libBiz
                 throw new InvalidOperationException($"无法写入文件: {ex.Message}", ex);
             }
         }
+        /// <summary>
+        /// add dly rpt Msg hdlr
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        public static async Task AddDlyrpt(Message? message)
+        {
+            //------------------------today wk rpt
+            // 检查消息内容是否包含 "今日工作内容"
+            if (message.Text.Contains("今日工作亮点"))
+            {
+                try
+                {
+                    SaveMessageToFile4Dlyrpt(message);
+
+
+                    Console.WriteLine("消息已保存");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"错误: {ex.Message}");
+                }
+                try
+                {
+                    //double wrt to   uidFldMode
+                    SaveMessageToFile4DlyrptUidFldMd(message);
+                    Console.WriteLine("消息已保存 SaveMessageToFile4DlyrptUidFldMd");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"错误: {ex.Message}");
+                }
+
+
+                //------------------- 创建要发送的回复消息
+                string folderPath = (BaseFolderName4dlyrptPart + GetTodayCode());
+                string alreadySendUsers = GetFileNamesAsJSONFrmFldr(folderPath);
+                string messageContent = $"接受到日报消息";
+                //    $".\n目前已经发送的人员如下：\n{alreadySendUsers}";
+
+                var reply = new Telegram.Bot.Types.Message
+                {
+                    Chat = new Chat { Id = message.Chat.Id },
+                    Text = messageContent,
+                    // ReplyToMessageId = message.MessageId
+                };
+
+                // 发送回复
+                try
+                {
+                    await botClient.SendTextMessageAsync(reply.Chat.Id, messageContent, replyToMessageId: message.MessageId);
+                    Console.WriteLine("消息已发送");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Failed to send message: {ex.Message}");
+                }
+            }
+        }
 
         public static string GetTodayCode()
         {
@@ -194,26 +386,35 @@ namespace libBiz
         {
             try
             {
+                weekendChk();
                 // 创建 Telegram Bot 客户端
                 var botClient = new TelegramBotClient(tokenbot);
 
                 // 准备消息内容
 
                 string dt = GetTodayCodeMnsHrs(8);
-                string messageContent = "日报小助手统计" + dt;
+              
                 string folderPath = BaseFolderName4dlyrptPart + dt;
                 string alreadySendUsers = GetFileNamesAsJSONFrmFldr(folderPath);
                 //     messageContent = $"{messageContent}\n目前已经发送的如下：\n{alreadySendUsers}";
 
                 // 发送消息到指定聊天
-                await botClient.SendTextMessageAsync(
-                    chatId: chatID,
-                    text: messageContent
-                );
+                //await botClient.SendTextMessageAsync(
+                //    chatId: chatID,
+                //    text: messageContent
+                //);
 
 
                 string mkd2console = GetRptToday(folderPath);
-                messageContent = $"目前还没有发送的人员如下:\n" + mkd2console;
+
+
+                var tmpltf = $"{prjdir}/cfg/rpt_today_tmplt.md";
+                Hashtable ht = new Hashtable();
+                ht["dt"] = dt;
+                ht["tb1142"] = mkd2console;
+
+                string messageContent = RendMD(ht, tmpltf);
+            
                 // 发送消息到指定聊天
                 await botClient.SendTextMessageAsync(
                     chatId: chatID,
@@ -269,6 +470,7 @@ namespace libBiz
         {
             try
             {
+                weekendChk();
                 // 创建 Telegram Bot 客户端
                 var botClient = new TelegramBotClient(tokenbot);
 
@@ -285,12 +487,16 @@ namespace libBiz
                 );
 
                 Console.WriteLine("Message sent successfully");
+                SumupDailyRpt();
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Failed to send message: {ex.Message}");
             }
         }
+       
+     
+
         public static string GetRptToday(string folderPath)
         {
             string alreadySendUsers = GetFileNamesAsJSONFrmFldr(folderPath);
@@ -308,57 +514,7 @@ namespace libBiz
             return mkd2console;
         }
 
-        /// <summary>
-        ///   Render(tmple(title,rowRender)   ,dataList)
-        /// </summary>
-        /// <param name="sortedList"></param>
-        /// <param name="title"></param>
-        /// <param name="rendRowFun"></param>
-        /// <returns></returns>
-        public static string FormatListToMarkdown(List<SortedList> sortedList, string title, Func<SortedList, string> rendRowFun)
-        {
-            var sb = new StringBuilder();
-
-            // 添加表头
-            //  sb.AppendLine("| uid      | name     | demo|");
-            sb.Append(title);
-
-            //    sb.AppendLine("|----------|-----------|--------|");
-
-            foreach (SortedList row in sortedList)
-            {
-                sb.AppendLine(rendRowFun(row));
-            }
-            // 遍历 SortedList 并添加到 Markdown 表格
-            //foreach (DictionaryEntry entry in sortedList)
-            //{
-            //    string key = (string)entry.Key;
-            //    string value = (string)entry.Value;
-
-            //}
-
-            return sb.ToString();
-        }
-
-        public static string FormatSortedListToMarkdown(SortedList sortedList)
-        {
-            var sb = new StringBuilder();
-
-            // 添加表头
-            sb.AppendLine("| uid      | name     | demo|");
-            sb.AppendLine("|----------|-----------|--------|");
-
-            // 遍历 SortedList 并添加到 Markdown 表格
-            foreach (DictionaryEntry entry in sortedList)
-            {
-                string key = (string)entry.Key;
-                string value = (string)entry.Value;
-                sb.AppendLine($"| {key,-8} | {value,-9} | |");
-            }
-
-            return sb.ToString();
-        }
-
+    
         // 创建基于日期的文件夹
         public static string CreateFolderBasedOnDate(string baseFolderName)
         {

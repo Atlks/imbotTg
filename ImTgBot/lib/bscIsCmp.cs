@@ -75,6 +75,15 @@ namespace prjx.libx
             HashSet<string> hs = GetHashsetFromFilTxt($"{prjdir}/cfg_cmd/citys.txt");
             return (hs.Contains(areaname));
         }
+
+        public static void weekendChk()
+        {
+            var datecode = GetTodayCodeMnsHrs(6);
+            if (IsSunday("2024" + datecode))
+            {
+                throw new Exception("sunday ex...");
+            }
+        }
         public static bool isMmsgHasMatchPostWd(HashSet<string> postnKywd位置词set, string[] kwds)
         {
             //if (text == null)

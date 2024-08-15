@@ -28,6 +28,24 @@ namespace prjx.libx
         {
             return (JObject)json_decodeObj(ToStr(objSave));
         }
+
+        /// <summary>
+        /// 解码 HTML 实体字符串
+        /// </summary>
+        /// <param name="encodedString">包含 HTML 实体的字符串</param>
+        /// <returns>解码后的字符串</returns>
+        public static string DecodeHtmlEntities(string encodedString)
+        {
+            if (string.IsNullOrEmpty(encodedString))
+            {
+                return encodedString;
+            }
+
+            // 使用 HttpUtility.HtmlDecode 方法解码 HTML 实体
+            return HttpUtility.HtmlDecode(encodedString);
+        }
+
+
         public static string EncryptAes(string plainText)
         {
             return ByteArrayToHex(EncryptAesRtBytearr(plainText));

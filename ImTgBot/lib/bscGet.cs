@@ -20,6 +20,64 @@ namespace prjx.libx
 {
     internal class bscGet
     {
+        public static object GetFieldV2(object data, string key, object df)
+        {
+            if (data == null)
+                return df;
+
+            if (string.IsNullOrWhiteSpace(key))
+                return df;
+            Type dataType = data.GetType();
+
+            // Check if the key is a property
+            PropertyInfo property = dataType.GetProperty(key, BindingFlags.Public | BindingFlags.Instance);
+            if (property != null)
+            {
+                object value = property.GetValue(data);
+                return value;
+            }
+
+            // Check if the key is a field
+            FieldInfo field = dataType.GetField(key, BindingFlags.Public | BindingFlags.Instance);
+            if (field != null)
+            {
+                object value = field.GetValue(data);
+                return value;
+            }
+
+            // Key not found
+            return df;
+        }
+
+        public static string GetFieldAsStrFrmObj(object data, string key)
+        {
+            if (data == null)
+                return "";
+
+            if (string.IsNullOrWhiteSpace(key))
+                return "";
+            Type dataType = data.GetType();
+
+            // Check if the key is a property
+            PropertyInfo property = dataType.GetProperty(key, BindingFlags.Public | BindingFlags.Instance);
+            if (property != null)
+            {
+                object value = property.GetValue(data);
+                return value?.ToString();
+            }
+
+            // Check if the key is a field
+            FieldInfo field = dataType.GetField(key, BindingFlags.Public | BindingFlags.Instance);
+            if (field != null)
+            {
+                object value = field.GetValue(data);
+                return value?.ToString();
+            }
+
+            // Key not found
+            return "";
+        }
+
         public static HashSet<string> GetKeysAsHashSet(SortedList sortedList)
         {
             // 使用 HashSet 来存储并返回键集合

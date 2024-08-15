@@ -21,11 +21,43 @@ using System.Text.RegularExpressions;
 using Telegram.Bot.Types;
 //using static SqlParser.Ast.Expression;
 using Microsoft.AspNetCore.WebUtilities;
+using System.Dynamic;
 
 namespace prjx.libx
 {
     public class bscConvert
     {
+        public static List<Hashtable> ConvertToHashtableList(List<dynamic> dynamicList)
+        {
+            var hashtableList = new List<Hashtable>();
+
+            foreach (var item in dynamicList)
+            {
+                var hashtable = new Hashtable();
+                var expando = item as ExpandoObject;
+
+                if (expando != null)
+                {
+                    foreach (var kvp in expando)
+                    {
+                        hashtable[kvp.Key] = kvp.Value;
+                    }
+                }
+                else
+                {
+                    var type = item.GetType();
+                    foreach (var property in type.GetProperties())
+                    {
+                        hashtable[property.Name] = property.GetValue(item);
+                    }
+                }
+
+                hashtableList.Add(hashtable);
+            }
+
+            return hashtableList;
+        }
+
         public static string GetRealPath(string folder)
         {
             try

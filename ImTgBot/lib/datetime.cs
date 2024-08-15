@@ -10,6 +10,24 @@ namespace libx
 {
     internal class datetime
     {
+        public static bool IsSunday(string dateStr)
+        {
+            // 定义日期格式
+            string format = "yyyyMMdd";
+            DateTime date;
+
+            // 尝试解析日期字符串
+            if (DateTime.TryParseExact(dateStr, format, null, System.Globalization.DateTimeStyles.None, out date))
+            {
+                // 判断是否是星期天
+                return date.DayOfWeek == DayOfWeek.Sunday;
+            }
+            else
+            {
+                // 如果解析失败，可以选择抛出异常或返回 false
+                throw new ArgumentException("Invalid date format. Expected format is yyyyMMdd.");
+            }
+        }
         public static string FmtDateMMDD(DateTime curdate)
         {
             return curdate.ToString("MMdd");
