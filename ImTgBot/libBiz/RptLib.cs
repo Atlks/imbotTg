@@ -39,12 +39,18 @@ namespace libBiz
 
                     //有确实的了consct miss
                     int missdays = clalcMissdays(todaycode, dbfld);
-                    SortedList o = new SortedList();
-                    o.Add("uid", id);
-                    o.Add("name", inimap[id]);
-                    o.Add("连续缺失天数", "🔥" + missdays);
+                    if(missdays>0)
+                    {
+                        if (missdays > 29)
+                            missdays = 3;
+                        SortedList o = new SortedList();
+                        o.Add("uid", id);
+                        o.Add("name", inimap[id]);
+                        o.Add("连续缺失天数", "🔥" + missdays);
 
-                    li.Add(o);
+                        li.Add(o);
+                    }
+                   
                 }
                 catch (Exception e)
                 {

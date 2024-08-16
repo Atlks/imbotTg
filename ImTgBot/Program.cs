@@ -54,11 +54,11 @@ class Program
     {
 
         var s = "| 连续缺失天数 | uname | uid|";
-        var sss3 =Len("@dabao8998  大宝");
+        var sss3 = Len("@dabao8998  大宝");
         //  大a宝   总宽度是5，这里计算为3需要补2byte
         //   大a宝   总宽度是7，这里计算为3需要补4byte
         var s222 = ConvertToMarkdownTableSpltLine(s);
-        
+
         //string folderPath = $"{prjdir}/db/dlyrpt0812";
         //string mkd2console = GetRptToday(folderPath);
         //Print(mkd2console)
@@ -73,11 +73,14 @@ class Program
             if (IsExistFil("c:/teststart.txt"))
             {
                 SleepSec(5);
-                RptMonth();
-                //      SendMessage4DailyRpt();//send ntfy
+
+                SendMessage4DailyRpt();//send ntfy
                 SleepSec(5);
-                //   SumupDailyRpt(); SleepSec(5);
-                 //  RptConsecutiveMissingDays();
+                SumupDailyRpt();
+                SleepSec(5);
+                RptConsecutiveMissingDays();
+                SleepSec(5);
+                RptMonth();
                 // ScheduleDailyTask(12, 01, SendMessage4DailyRpt);//test
             }
 
@@ -102,7 +105,7 @@ class Program
 
     }
 
-   
+
     private static void rendTest2()
     {
         // 读取模板文件内容
@@ -125,12 +128,12 @@ class Program
         Print(result);
     }
 
-   
-  
-  
-    
-  
- 
+
+
+
+
+
+
 
 
 
