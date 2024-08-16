@@ -521,7 +521,7 @@ namespace libBiz
                 var botClient = new TelegramBotClient(tokenbot);
 
                 // 准备消息内容
-                string messageContent = "日报小助手提醒啦：没有发日报的请及时发日报，已发的忽略";
+                string messageContent = "🔔日报小助手提醒了🔔：没有发日报的请及时发日报，已发的忽略";
                 string folderPath = CreateFolderBasedOnDate(BaseFolderName4dlyrptPart);
                 string alreadySendUsers = GetFileNamesAsJSONFrmFldr(folderPath);
                 //    messageContent = $"{messageContent}\n目前已经发送的如下：\n{alreadySendUsers}";
