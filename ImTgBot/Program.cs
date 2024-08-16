@@ -62,7 +62,7 @@ class Program
         //string folderPath = $"{prjdir}/db/dlyrpt0812";
         //string mkd2console = GetRptToday(folderPath);
         //Print(mkd2console)
-        rendTest2();
+        rendTest3();
 
         Main2024(() =>
         {
@@ -105,7 +105,7 @@ class Program
 
     }
 
-
+  
     private static void rendTest2()
     {
         // 读取模板文件内容

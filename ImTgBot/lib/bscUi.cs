@@ -4,6 +4,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -135,6 +136,55 @@ namespace libx
             }
             return fnl;
         }
+
+
+        public static string RendMustacheFrmTmpltTxt(object obj1, string tmpltTxt)
+        {
+            //   var tmpltTxt = ReadAllText(tmpltTxt);
+            // 使用正则表达式匹配模板标签 {{key}}
+            var regex = new Regex(@"{{(.*?)}}");
+
+            // 替换模板标签
+            var result = regex.Replace(tmpltTxt, match =>
+            {
+                var key = match.Groups[1].Value;
+                // 如果 Hashtable 中包含这个键，则用对应的值替换
+                if (ContainsKey(obj1,key))
+                {
+                    return GetFieldAsStrFrmObj(obj1, key);
+                }
+                // 如果 Hashtable 中不包含这个键，则保留原标签
+                return match.Value;
+            });
+
+            return result;
+        }
+
+        private static bool ContainsKey(object obj1, string key)
+        {
+            if (obj1 == null || string.IsNullOrEmpty(key))
+            {
+                return false;
+            }
+
+            // 检查是否为字典类型
+            if (obj1 is IDictionary<string, object> dictionary)
+            {
+                return dictionary.ContainsKey(key);
+            }
+
+            // 检查是否为动态对象
+            if (obj1 is IDictionary<string, object> dynamicObject)
+            {
+                return dynamicObject.ContainsKey(key);
+            }
+
+            // 检查对象是否包含指定属性
+            Type type = obj1.GetType();
+            PropertyInfo property = type.GetProperty(key);
+            return property != null;
+        }
+
         public static string RendMustacheFrmTmpltTxt(Hashtable ht, string tmpltTxt)
         {
          //   var tmpltTxt = ReadAllText(tmpltTxt);
