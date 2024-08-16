@@ -113,6 +113,12 @@ namespace prjx.libx
             // 截取前100个字符，如果输入长度不足100个字符，则返回整个字符串
             return input.Length <= len ? input : input.Substring(0, len);
         }
+        public static string RepeatSpace(int count)
+        {
+            if (count < 0)
+                count = 0;
+            return new string(' ', count);
+        }
         public static string repeat(int count)
         {
             if (count < 0)

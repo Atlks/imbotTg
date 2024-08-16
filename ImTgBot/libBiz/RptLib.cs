@@ -4,6 +4,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
@@ -12,7 +13,7 @@ using System.Web;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using static System.Runtime.InteropServices.JavaScript.JSType;
- 
+
 namespace libBiz
 {
     internal class RptLib
@@ -41,7 +42,7 @@ namespace libBiz
                     SortedList o = new SortedList();
                     o.Add("uid", id);
                     o.Add("name", inimap[id]);
-                    o.Add("连续缺失天数", "☀️" + missdays);
+                    o.Add("连续缺失天数", "🔥" + missdays);
 
                     li.Add(o);
                 }
@@ -53,33 +54,46 @@ namespace libBiz
             }
             Print(EncodeJsonFmt(li));
 
-        //    rendTest(li);
+            //    rendTest(li);
 
-            string mkdwn2 = ConvertToMarkdown(li);
-            Print(mkdwn2);
+            //=---------------rendTable to mkd
+
+            Hashtable tmpltMkdwn = new Hashtable();
+            tmpltMkdwn.Add(render_title_table, "| 连续缺失天数 | uname | uid|");
+
+            tmpltMkdwn.Add(render_rowRender, (SortedList row) =>
+            {
+                return "|" + row["连续缺失天数"].ToString() + "|" + row["name"].ToString() + "|" + row["uid"].ToString() + "|";
+            });
+
+            string mkdwn2tbl = RenderTable(li, tmpltMkdwn);
+            //  string mkdwn2 = ConvertToMarkdown(li);
+            Print(mkdwn2tbl);
 
 
             //-----------rend to consle
-            string mkd2console = FormatAndPrintMarkdownTable(mkdwn2);
-            Print(mkd2console);
+            string mkd2consoleTable = FormatAndPrintMarkdownTable(mkdwn2tbl);
+            Print(mkd2consoleTable);
+
+
+            //------------rend to tmplt
+            Hashtable data = new Hashtable();
+            data["tb1142"] = mkd2consoleTable;
+            data["dt"] = GetTodayCode();
+
+
             var tmpltf = $"{prjdir}/cfg/csctv_lyesyvMiss_tmplt.md";
-            Hashtable ht = new Hashtable();
-            ht["tb1142"] = mkd2console;
-            ht["dt"] = GetTodayCode();
-
-
-
-            string messageContent = RendMD(ht, tmpltf);
+            string messageContent = RendTmpltMD(data, tmpltf);
             Print(messageContent);
             // 发送消息到指定聊天
             Sendmsg(chatID, messageContent);
 
         }
 
-     
-      
-    
-       
+
+
+
+
         public static void RptMonth()
         {
             SortedList inimap = NewSortedListFrmIni($"{prjdir}/cfg/mem.ini");
@@ -95,11 +109,13 @@ namespace libBiz
                 //if (IsExistFilNameStartWz(todaycode, dbfld))
                 //    continue;
                 month = "2024" + Left(todaycode, 2);
+                string yyyymmdd = "2024" + todaycode;
 
                 //有确实的了consct miss
                 int missdays = 0;
                 try
                 {
+                    int maxday = GetMaxDaysOfMonth(month);
                     missdays = calcCountByMonthByUid(month, dbfld);
                 }
                 catch (Exception e)
@@ -107,14 +123,16 @@ namespace libBiz
                     Print(e);
                 }
 
-                SortedList o = new SortedList();
+                if (missdays > 0)
+                {
+                    SortedList o = new SortedList();
+                    //    o.Add("已发天数", missdays);
+                    o.Add("缺失天数", missdays);
+                    o.Add("id", id);
+                    o.Add("name", inimap[id]);
+                    li.Add(o);
+                }
 
-                o.Add("缺失天数", missdays);
-                o.Add("id", id);
-                o.Add("name", inimap[id]);
-
-
-                li.Add(o);
             }
             Print(EncodeJsonFmt(li));
 
@@ -144,19 +162,31 @@ namespace libBiz
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="month">202408</param>
+        /// <param name="monthYYYYMM">202408</param>
         /// <param name="dbfld"></param>
         /// <returns></returns>
-        public static int calcCountByMonthByUid(string month, string dbfld)
+        public static int calcCountByMonthByUid(string monthYYYYMM, string dbfld)
         {
-            int padd = 16;
+            int maxday = GetMaxDaysOfMonth(monthYYYYMM);
+            int paddWkdays = 13;
+            if (monthYYYYMM != "202408")
+                paddWkdays = 0;
+            string yymm = monthYYYYMM;
+            int wkdays = GetWorkDaysExcludingSundays(yymm);
+
+            string todaycode = GetTodayCode();
+
+            string yyyymmdd = "2024" + todaycode;
+            int daysLeft = DaysUntilEndOfMonth(yyyymmdd);
+            int sunLeft = CountSundaysUntilEndOfMonth(yyyymmdd);
+            int leftWkdays = daysLeft - sunLeft;
             if (!Directory.Exists(dbfld))
-                return 30 - padd - DateTime.Now.Day;
+                return wkdays - paddWkdays - leftWkdays;
             var files = Directory.GetFiles(dbfld);
             int countDays = 0;
-            string yymmdd = "2024" + month;
-            DateTime curdate = ConvertToDateTime(month + "01");
-            int maxday = GetMaxDaysOfMonth(month);
+
+            DateTime curdate = ConvertToDateTime(monthYYYYMM + "01");
+
             for (int i = 1; i < maxday; i++)
             {
                 string curdateCode = FmtDateMMDD(curdate);
@@ -171,7 +201,9 @@ namespace libBiz
 
 
             }
-            return maxday - DateTime.Now.Day - countDays - padd;
+            //  return countDays;
+            //miss days
+            return wkdays  - paddWkdays - leftWkdays-countDays;
 
 
         }
@@ -201,19 +233,20 @@ namespace libBiz
 
                 }
                 return missdays;
-            }catch(Exception e)
+            }
+            catch (Exception e)
             {
                 PrintExcept("calcCountByMonthByUid", e);
                 return 0;
             }
-          
+
 
 
         }
 
 
 
-      
+
         public static void SaveMessageToFile4Dlyrpt(Message message)
         {
             // 实际实现保存消息到文件
@@ -393,7 +426,7 @@ namespace libBiz
                 // 准备消息内容
 
                 string dt = GetTodayCodeMnsHrs(8);
-              
+
                 string folderPath = BaseFolderName4dlyrptPart + dt;
                 string alreadySendUsers = GetFileNamesAsJSONFrmFldr(folderPath);
                 //     messageContent = $"{messageContent}\n目前已经发送的如下：\n{alreadySendUsers}";
@@ -413,8 +446,8 @@ namespace libBiz
                 ht["dt"] = dt;
                 ht["tb1142"] = mkd2console;
 
-                string messageContent = RendMD(ht, tmpltf);
-            
+                string messageContent = RendTmpltMD(ht, tmpltf);
+
                 // 发送消息到指定聊天
                 await botClient.SendTextMessageAsync(
                     chatId: chatID,
@@ -494,8 +527,8 @@ namespace libBiz
                 Console.WriteLine($"Failed to send message: {ex.Message}");
             }
         }
-       
-     
+
+
 
         public static string GetRptToday(string folderPath)
         {
@@ -514,7 +547,7 @@ namespace libBiz
             return mkd2console;
         }
 
-    
+
         // 创建基于日期的文件夹
         public static string CreateFolderBasedOnDate(string baseFolderName)
         {

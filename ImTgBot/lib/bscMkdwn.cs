@@ -22,14 +22,14 @@ namespace libx
                 return "Invalid table format.";
             }
 
-            // 计算列宽
+            // 计算列宽  int[]  columnWidths
             var columnWidths = CalculateColumnWidths(lines);
 
             // 打印格式化表格
             return PrintFormattedTable(lines, columnWidths);
         }
 
-        private static int[] CalculateColumnWidths(string[] lines)
+        public static int[] CalculateColumnWidths(string[] lines)
         {
             // 获取表头和分隔行
             var headerLine = lines[0];
@@ -50,10 +50,12 @@ namespace libx
                 {
                     try
                     {
-                        var columnWidth = columns[i].Trim().Length;
-                        if (columnWidth > columnWidths[i])
+                        string input = columns[i].Trim();
+                        var cur_columnWidth = Len(input);
+                        Print("len(s)==> " + cur_columnWidth + "(" + input + ")");
+                        if (cur_columnWidth > columnWidths[i])
                         {
-                            columnWidths[i] = columnWidth;
+                            columnWidths[i] = cur_columnWidth;
                         }
                     }
                     catch (Exception e)
@@ -143,7 +145,9 @@ namespace libx
                     (column, index) => {
                         try
                         {
-                            return column.Trim().PadRight(columnWidths[index]);
+                            //PadRight totleWidth
+                            // PadRight 这里有bug 需要计算字符排除汉字
+                            return PadRight(column.Trim(),columnWidths[index]);
                         }catch(Exception e)
                         {
                             return column.Trim().PadRight(3);
@@ -157,5 +161,7 @@ namespace libx
             //    Console.WriteLine(sb.ToString());
             return sb.ToString();
         }
+
+      
     }
 }

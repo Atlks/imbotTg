@@ -5,12 +5,52 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace prjx.libx
 {
     internal class bscStrArr
     {
+
+        public static string PadRight(string v1, int v2)
+        {
+            int len = Len(v1);
+            int padint = v2 - len;
+            return v1 + RepeatSpace(padint);
+        }
+        public static int Len(string input)
+        {
+            int length = 0;
+            //  //  /[\u{1f600}-\u{1f64f}\u{1f300}-\u{1f5ff}\u{1f900}-\u{1faff}\u{1f680}-\u{1f6ff}\u{2600}-\u{27ff}\u{2b00}-\u{2bff}\u{1f100}-\u{1f1ff}\u{1f1e0}-\u{1f1ff}\u{1f1f0}-\u{1f2ff}\u{1f191}-\u{1f19a}]/g
+
+            // 使用正则表达式匹配汉字和 emoji
+
+            string doubleWidthPattern = @"[\u4e00-\u9fff]|[\ud800-\udbff]|[\udc00-\udfff]";
+            // 匹配 emoji
+            string emojiPattern = @"[\uD83C-\uDBFF\uDC00-\uDFFF]";
+            
+            foreach (char c in input)
+            {
+                if (Regex.IsMatch(c.ToString(), doubleWidthPattern))
+                {
+                    // 汉字或 emoji 计为 2
+                    length += 2;
+                }
+               else if (Regex.IsMatch(c.ToString(), emojiPattern))
+                {
+                    // 汉字或 emoji 计为 2
+                    length += 2;
+                }
+                else
+                {
+                    // 其他字符计为 1
+                    length += 1;
+                }
+            }
+
+            return length;
+        }
 
         public static string[] SliceStrArr(string[] originalArray, int startIndex, int closetagIdx)
         {

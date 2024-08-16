@@ -10,6 +10,80 @@ namespace libx
 {
     internal class datetime
     {
+
+        public static int CountSundaysUntilEndOfMonth(string dateInput)
+        {
+            // 解析输入的日期格式
+            if (DateTime.TryParseExact(dateInput, "yyyyMMdd", null, System.Globalization.DateTimeStyles.None, out DateTime date))
+            {
+                // 获取该日期所在月份的最后一天
+                DateTime lastDayOfMonth = new DateTime(date.Year, date.Month, DateTime.DaysInMonth(date.Year, date.Month));
+
+                int sundayCount = 0;
+
+                // 计算从给定日期到月底的星期天数量
+                for (DateTime day = date; day <= lastDayOfMonth; day = day.AddDays(1))
+                {
+                    if (day.DayOfWeek == DayOfWeek.Sunday)
+                    {
+                        sundayCount++;
+                    }
+                }
+
+                return sundayCount;
+            }
+            else
+            {
+                throw new ArgumentException("Invalid date format. Please provide a date in yyyyMMdd format.");
+            }
+        }
+        public static int DaysUntilEndOfMonth(string dateInput)
+        {
+            // 解析输入的日期格式
+            if (DateTime.TryParseExact(dateInput, "yyyyMMdd", null, System.Globalization.DateTimeStyles.None, out DateTime date))
+            {
+                // 获取该日期所在月份的最后一天
+                DateTime lastDayOfMonth = new DateTime(date.Year, date.Month, DateTime.DaysInMonth(date.Year, date.Month));
+
+                // 计算从给定日期到月底的天数
+                int remainingDays = (lastDayOfMonth - date).Days;
+
+                return remainingDays;
+            }
+            else
+            {
+                throw new ArgumentException("Invalid date format. Please provide a date in yyyyMMdd format.");
+            }
+        }
+        public static int GetWorkDaysExcludingSundays(string dateInput)
+        {
+            // 解析输入的日期格式
+            if (DateTime.TryParseExact(dateInput, "yyyyMM", null, System.Globalization.DateTimeStyles.None, out DateTime date))
+            {
+                // 获取该月份的第一天和最后一天
+                DateTime firstDayOfMonth = new DateTime(date.Year, date.Month, 1);
+                DateTime lastDayOfMonth = firstDayOfMonth.AddMonths(1).AddDays(-1);
+
+                int totalDays = (lastDayOfMonth - firstDayOfMonth).Days + 1;
+                int sundaysCount = 0;
+
+                // 计算该月份中星期日的数量
+                for (DateTime day = firstDayOfMonth; day <= lastDayOfMonth; day = day.AddDays(1))
+                {
+                    if (day.DayOfWeek == DayOfWeek.Sunday)
+                    {
+                        sundaysCount++;
+                    }
+                }
+
+                // 返回总天数减去星期日数量
+                return totalDays - sundaysCount;
+            }
+            else
+            {
+                throw new ArgumentException("Invalid date format. Please provide a date in yyyyMMdd format.");
+            }
+        }
         public static bool IsSunday(string dateStr)
         {
             // 定义日期格式

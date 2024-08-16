@@ -12,7 +12,7 @@ namespace libx
 {
     internal class bscUi
     {
-        public static object render_title_table = "table_title";
+         public static object render_title_table = "table_title";
         public static object render_rowRender = "render_rowRender";
 
 
@@ -187,7 +187,7 @@ namespace libx
         /// <param name="ht"></param>
         /// <param name="tmpltf"></param>
         /// <returns></returns>
-        public static string RendMD(Hashtable ht, string tmpltf)
+        public static string RendTmpltMD(Hashtable ht, string tmpltf)
         {
             var tmpltTxt = ReadAllText(tmpltf);
             // 使用正则表达式匹配模板标签 {{key}}
@@ -310,8 +310,10 @@ namespace libx
 
             // 添加表头
             //  sb.AppendLine("| uid      | name     | demo|");
-            sb.Append(tmplt[render_title_table]);
+           sb.AppendLine(tmplt[render_title_table].ToString());
 
+            sb.AppendLine(ConvertToMarkdownTableSpltLine(tmplt[render_title_table].ToString()));
+            //here can calc |----|
             //    sb.AppendLine("|----------|-----------|--------|");
             Func<SortedList, string> rendRowFun = (Func<SortedList, string>)tmplt[render_rowRender];
             foreach (SortedList row in li)
@@ -329,5 +331,21 @@ namespace libx
             return sb.ToString();
         }
 
+
+        public static string ConvertToMarkdownTableSpltLine(string headerRow, string separator = "---")
+        {
+            // 将表头按照 '|' 分割
+            var headers = headerRow.Split(new[] { '|' }, StringSplitOptions.RemoveEmptyEntries)
+                                   .Select(h => h.Trim())
+                                   .ToArray();
+
+            // 生成 Markdown 表格的表头行
+           // var markdownHeader = $"| {string.Join(" | ", headers)} |";
+
+            // 生成表头与数据行之间的分隔符行
+            var separatorRow = $"| {string.Join(" | ", headers.Select(_ => separator))} |";
+
+            return $"{separatorRow}";
+        }
     }
 }
