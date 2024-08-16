@@ -44,7 +44,7 @@ namespace libBiz
                         if (missdays > 29)
                             missdays = 3;
                         SortedList o = new SortedList();
-                        o.Add("uid", id);
+                   //     o.Add("uid", id);
                         o.Add("name", inimap[id]);
                         o.Add("连续缺失天数", "🔥" + missdays);
 
@@ -65,11 +65,11 @@ namespace libBiz
             //=---------------rendTable to mkd
 
             Hashtable tmpltMkdwn = new Hashtable();
-            tmpltMkdwn.Add(render_title_table, "| 连续缺失天数 | uname | uid|");
+            tmpltMkdwn.Add(render_title_table, "| 连续缺失天数 | uname | ");
 
             tmpltMkdwn.Add(render_rowRender, (SortedList row) =>
             {
-                return "|" + row["连续缺失天数"].ToString() + "|" + row["name"].ToString() + "|" + row["uid"].ToString() + "|";
+                return "|" + row["连续缺失天数"].ToString() + "|" + row["name"].ToString() + "|"  ;
             });
 
             string mkdwn2tbl = RenderTable(li, tmpltMkdwn);
@@ -134,7 +134,7 @@ namespace libBiz
                     SortedList o = new SortedList();
                     //    o.Add("已发天数", missdays);
                     o.Add("缺失天数", missdays);
-                    o.Add("id", id);
+                 //   o.Add("id", id);
                     o.Add("name", inimap[id]);
                     li.Add(o);
                 }
@@ -558,7 +558,8 @@ namespace libBiz
             //     search usrs  where uid not in files
             HashSet<string> noExistUid = SubtractFrmFilist(ids, alreadySendUsers);
             SortedList noRptUsers = FltWhrKeyIn(inimap, noExistUid);
-            string mkd = FormatSortedListToMarkdown(noRptUsers);
+       //     noRptUsers.Remove("uid");
+            string mkd = FormatSortedListToMarkdown4rptToday(noRptUsers);
             Print(mkd);
 
             string mkd2console =

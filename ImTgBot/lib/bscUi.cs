@@ -253,20 +253,20 @@ namespace libx
             return sb.ToString();
         }
 
-        public static string FormatSortedListToMarkdown(SortedList sortedList)
+        public static string FormatSortedListToMarkdown4rptToday(SortedList sortedList)
         {
             var sb = new StringBuilder();
 
             // 添加表头
-            sb.AppendLine("| uid      | name     | demo|");
-            sb.AppendLine("|----------|-----------|--------|");
+            sb.AppendLine("  | name     | ");
+            sb.AppendLine("|-----------|");
 
             // 遍历 SortedList 并添加到 Markdown 表格
             foreach (DictionaryEntry entry in sortedList)
             {
                 string key = (string)entry.Key;
                 string value = (string)entry.Value;
-                sb.AppendLine($"| {key,-8} | {value,-9} | |");
+                sb.AppendLine($" | {value,-9} |");
             }
 
             return sb.ToString();
