@@ -46,16 +46,16 @@ namespace prjx.libx
         {
             // 设置控制台输出编码为 UTF-8
             Console.OutputEncoding = Encoding.UTF8;
-            Print("!!!!****⚠️⚠️⚠️⚠️⚠️⚠️⚠️ver88888899a❣❣");
+            Print("!!!!****⚠️⚠️⚠️⚠️⚠️⚠️⚠️ver88888899b❣❣");
             PrintLog("ttt");
-           
+
             Boot4StbltSetting();
             //-----------------log
 
             RunSetRollLogFileV2();
             //-----------end log
             //add all cache db 
-    
+
             //------------------ 设置全局异常处理
             prjx.libx.exCls.set_error_handler();
             //捕获未处理的同步异常：使用 AppDomain.CurrentDomain.UnhandledException 事件。
@@ -68,30 +68,27 @@ namespace prjx.libx
                 Thread.Sleep(3000);
                 PrintLogo();
                 //-------------start boot music
-                // 启动一个新线程，执行匿名函数
-                Thread newThread = new Thread(() =>
-                {
-                    Print("新线程开始执行");
-                 //   playMp3($"{prjdir}/libres/start.mp3", 2);
-
-                    Print("新线程完成工作");
-                });
-                // 启动新线程
-                newThread.Start();
+                startBootMusic();
 
 
                 //------------动画金字塔logo
-                for (int i = 0; i < 40; i++)
-                {
-                    Thread.Sleep(50);
-                    Print(str_repeatV2("=", i) + "=>");
-                }
-
+                StartAnimoPryt();
 
             });
 
 
             //-----------sync prgrm to svr
+            SyncPrgrmToSvr();
+
+            Call(actBiz, []);
+            // actBiz();
+
+
+
+        }
+
+        private static void SyncPrgrmToSvr()
+        {
             TaskRunNewThrd(() =>
             {
                 var cfgf = $"{prjdir}/cfg/cfg.ini";
@@ -112,23 +109,46 @@ namespace prjx.libx
                         {
                             var savedir = GetFieldAsStr10(cfgDic, "savedir");
                             UploadFileAsync(fl, url, savedir);
-                          
+
                         }
-                           
+
                     }
 
                 }
 
             });
-
-            Call(actBiz, []);
-            // actBiz();
-
-
-
         }
 
-      
+        private static void StartAnimoPryt()
+        {
+            try
+            {
+                for (int i = 0; i < 40; i++)
+                {
+                    Thread.Sleep(50);
+                    Print(str_repeatV2("=", i) + "=>");
+                }
+            }catch(Exception e)
+            {
+                Print(e);
+            }
+          
+        }
+
+        private static void startBootMusic()
+        {
+            // 启动一个新线程，执行匿名函数
+            Thread newThread = new Thread(() =>
+            {
+                Print("新线程开始执行");
+                //   playMp3($"{prjdir}/libres/start.mp3", 2);
+
+                Print("新线程完成工作");
+            });
+            // 启动新线程
+            newThread.Start();
+        }
+
 
         public static void evt_exit()
 
