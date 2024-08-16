@@ -157,6 +157,19 @@ namespace libBiz
             Print("--------------------------------");
             string mkd2console = FormatAndPrintMarkdownTable(mkdwn2);
             Print($"|{month}|\n" + mkd2console);
+
+
+            //------------rend to tmplt
+            Hashtable data = new Hashtable();
+            data["tb1142"] = mkd2console;
+            data["dt"] = month;
+            data["foot"] = "====================";
+
+            var tmpltf = $"{prjdir}/cfg/rpt_month_tmplt.md";
+            string messageContent = RendTmpltMD(data, tmpltf);
+            Print(messageContent);
+            // 发送消息到指定聊天
+            Sendmsg(chatID, messageContent);
         }
 
         /// <summary>
