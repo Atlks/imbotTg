@@ -54,6 +54,9 @@ namespace prjx.libx
             if (data == null)
                 return "";
 
+            if (IsSortedList(data))
+                return GetFieldAsStr((SortedList)data, key);
+
             if (string.IsNullOrWhiteSpace(key))
                 return "";
             Type dataType = data.GetType();

@@ -5,12 +5,86 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace libx
 {
     internal class bscMkdwn
     {
+
+        public static string FormatMarkdown2consl(string markdown)
+        {
+            // 分割每一行
+            var lines = markdown.Split("\n");
+                //markdown.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+            bool isTable = false;
+            List<string[]> tableLines = new List<string[]>();
+            string rztLines = "";
+            foreach (var linex in lines)
+            {
+              var  line = linex.Trim();
+               
+                // 检查是否是表格行
+                if (Regex.IsMatch(line, @"^\|.+\|$"))
+                {
+                    isTable = true;
+                    line = line.Trim('|');
+                    string[] itemLin = line.Split('|').Select(c => c.Trim()).ToArray();
+                    tableLines.Add(itemLin);
+                }
+                else
+                {    //    // 如果当前行不是表格
+                    if (isTable)
+                    {
+                        // 如果当前行不是表格且之前行是表格，则格式化表格
+                        rztLines = rztLines +   FormatAndPrintTable(tableLines)+"\n";
+                        tableLines.Clear();
+                        isTable = false;
+                    }
+                    //  Console.WriteLine(line);  // 原样输出非表格行
+                    rztLines = rztLines + line + "\n";
+                }
+            }
+
+            // 如果文档以表格结尾，处理剩余的表格
+            if (isTable)
+            {
+                rztLines = rztLines + ( FormatAndPrintTable(tableLines))+"\n";
+            }
+            return rztLines;
+        }
+
+        private static string FormatAndPrintTable(List<string[]> tableLines)
+        {
+            if (tableLines.Count == 0) return "";
+
+            // 计算每列的最大宽度
+            var columnWidths = new int[tableLines[0].Length];
+            foreach (var row in tableLines)
+            {
+                for (int i = 0; i < row.Length; i++)
+                {
+                    columnWidths[i] = Math.Max(columnWidths[i],Len( row[i]));
+                }
+            }
+
+            string rzt = "";
+            // 输出格式化后的表格
+            foreach (var row in tableLines)
+            {
+                for (int i = 0; i < row.Length; i++)
+                {
+                    string colVal = row[i];
+                    int widTotal = columnWidths[i];
+                    rzt = rzt+($" {PadRight(colVal, widTotal)} |");
+                //    rzt= rzt+($"| {row[i].PadRight(columnWidths[i])} ");
+                }
+                rzt = rzt.Trim('|');
+                rzt = rzt + ("\n");
+            }
+            return rzt;
+        }
         public static string FormatAndPrintMarkdownTable(string markdownTable)
         {
             // 拆分 Markdown 表格的行

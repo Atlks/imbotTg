@@ -157,25 +157,31 @@ namespace libBiz
             //            return "|" + row["uid"].ToString() + "|" + row["连续缺失天数"].ToString() + "|" + row["name"].ToString() + "|";
             //        });
 
-            string mkdwn2 = ConvertToMarkdown(li);
+
+            //--------------rend to mdk
+            //string mkdwn2 = ConvertToMarkdown(li);
+          
+            // 创建数据模型
+            var data = new
+            {
+                yyyymm = month,
+                list2024 = li,
+                foot = "===================="
+            };
+            // 渲染模板
+            var tmpltf = $"{prjdir}/cfg/rpt_month_tmplt.md";
+            string mkdwn2 = RenderTemplate4Agl(ReadAllText(tmpltf), data);
+           
             Print(mkdwn2);
 
-            Print("--------------------------------");
-            string mkd2console = FormatAndPrintMarkdownTable(mkdwn2);
-            Print($"|{month}|\n" + mkd2console);
-
-
-            //------------rend to tmplt
-            Hashtable data = new Hashtable();
-            data["tb1142"] = mkd2console;
-            data["dt"] = month;
-            data["foot"] = "====================";
-
-            var tmpltf = $"{prjdir}/cfg/rpt_month_tmplt.md";
-            string messageContent = RendTmpltMD(data, tmpltf);
-            Print(messageContent);
+            Print("------------------------to console fmt --------");
+            string mkd2console = FormatMarkdown2consl(mkdwn2);
+            //   Print($"|{month}|\n" + mkd2console);
+            Print(mkd2console);
+ 
+          
             // 发送消息到指定聊天
-            Sendmsg(chatID, messageContent);
+            Sendmsg(chatID, mkd2console);
         }
 
         /// <summary>
@@ -291,7 +297,7 @@ namespace libBiz
             // 获取发送人的用户名
             string username = message.From?.Username ?? "unknown";
             string uid = message.From?.Id.ToString();
-            string timecode = DateTime.Now.ToString("MMdd");
+            string timecode = GetTodayCode();// DateTime.Now.ToString("MMdd");
             string uname = $"{timecode} {uid} uname({username}) frstLastname({message.From?.FirstName} {message.From?.LastName})";
 
             // 确定文件路径
@@ -434,7 +440,7 @@ namespace libBiz
             // 格式化为 "yyyymmdd" 并返回
             return newTime.ToString("MMdd");
         }
-        public static async Task SumupDailyRpt()
+        public static void SumupDailyRpt()
         {
             try
             {
@@ -468,10 +474,11 @@ namespace libBiz
                 string messageContent = RendTmpltMD(ht, tmpltf);
 
                 // 发送消息到指定聊天
-                await botClient.SendTextMessageAsync(
-                    chatId: chatID,
-                    text: messageContent
-                );
+                Sendmsg(chatID, messageContent);
+                //await botClient.SendTextMessageAsync(
+                //    chatId: chatID,
+                //    text: messageContent
+                //);
 
                 Console.WriteLine("Message sent successfully");
             }
@@ -518,7 +525,7 @@ namespace libBiz
             }
         }
 
-        public static async Task SendMessage4DailyRpt()
+        public static void SendMessage4DailyRpt()
         {
             try
             {
@@ -533,10 +540,11 @@ namespace libBiz
                 //    messageContent = $"{messageContent}\n目前已经发送的如下：\n{alreadySendUsers}";
 
                 // 发送消息到指定聊天
-                await botClient.SendTextMessageAsync(
-                    chatId: chatID,
-                    text: messageContent
-                );
+                Sendmsg(chatID, messageContent);
+                //await botClient.SendTextMessageAsync(
+                //    chatId: chatID,
+                //    text: messageContent
+                //);
 
                 Console.WriteLine("Message sent successfully");
                 SumupDailyRpt();

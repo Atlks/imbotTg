@@ -15,6 +15,15 @@ namespace prjx.libx
 {
     internal class bscIsCmp
     {
+        public static bool IsListSorted(object obj)
+        {
+            return obj is List<SortedList> sortedList;
+        }
+
+        public static bool IsListHashtb(object obj)
+        {
+            return obj is List<Hashtable> sortedList;
+        }
         public static bool IsExistFilNameStartWz(string todaycode, string dbfld)
         {
             if (!Directory.Exists(dbfld))

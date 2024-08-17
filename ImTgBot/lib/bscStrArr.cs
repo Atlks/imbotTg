@@ -13,11 +13,11 @@ namespace prjx.libx
     internal class bscStrArr
     {
 
-        public static string PadRight(string v1, int v2)
+        public static string PadRight(string colVal, int widTotal)
         {
-            int len = Len(v1);
-            int padint = v2 - len;
-            return v1 + RepeatSpace(padint);
+            int len = Len(colVal);
+            int padint = widTotal - len;
+            return colVal + RepeatSpace(padint);
         }
         public static int Len(string input)
         {

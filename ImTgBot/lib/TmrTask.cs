@@ -39,7 +39,8 @@ namespace libx
                     //   await Task.Delay(duration);
 
                     // 执行任务
-                    task.DynamicInvoke();
+                    Invoke(task);
+                  
                     SleepSec(30);
                     //   task();
                 }
@@ -50,6 +51,6 @@ namespace libx
             PrintRet(__METHOD__, "");
         }
 
-
+       
     }
 }

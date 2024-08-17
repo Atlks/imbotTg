@@ -15,6 +15,18 @@ namespace prjx.libx
 {
     internal class bsccode
     {
+        public static void Invoke(Delegate task)
+        {
+            try
+            {
+                task.DynamicInvoke();
+            }
+            catch (Exception e)
+            {
+                PrintExcept("invoke(delgt)", e);
+            }
+
+        }
         public static void SleepSec(double duration)
         {
             // 将时间转换为毫秒，并确保是整数

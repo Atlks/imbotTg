@@ -62,7 +62,7 @@ class Program
         //string folderPath = $"{prjdir}/db/dlyrpt0812";
         //string mkd2console = GetRptToday(folderPath);
         //Print(mkd2console)
-        rendTest3();
+        rendTestAgl();
 
         Main2024(() =>
         {
@@ -72,14 +72,19 @@ class Program
             // 设置每天 5:30 执行任务
             if (IsExistFil("c:/teststart.txt"))
             {
-                SleepSec(5);
 
-                SendMessage4DailyRpt();//send ntfy
-                SleepSec(5);
-                SumupDailyRpt();
-                SleepSec(5);
-                RptConsecutiveMissingDays();
-                SleepSec(5);
+                Print("------------------------to console fmt --------");
+                string folderPath = $"{prjdir}/cfg/tmp.md";
+                string mkd2console = FormatMarkdown2consl(ReadAllText(folderPath));
+                Print(mkd2console);
+                //SleepSec(5);
+
+                //SendMessage4DailyRpt();//send ntfy
+                //SleepSec(5);
+                //SumupDailyRpt();
+                //SleepSec(5);
+                //RptConsecutiveMissingDays();
+                //SleepSec(5);
                 RptMonth();
                 // ScheduleDailyTask(12, 01, SendMessage4DailyRpt);//test
             }
@@ -93,6 +98,7 @@ class Program
 
             ScheduleDailyTask(3, 50, SumupDailyRpt);
             ScheduleDailyTask(4, 00, RptConsecutiveMissingDays);
+            ScheduleDailyTask(4, 05, RptMonth);
 
             if (IsExistFil("c:/teststart.txt"))
             {

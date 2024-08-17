@@ -124,9 +124,23 @@ namespace libx
             return tokens.ToArray();
         }
 
-
+        public static string renderRowTmplt(string rowTmplt, List<SortedList> list)
+        {
+            string fnl = "";
+            var li = list;
+            foreach (SortedList item in li)
+            {
+                string rzt = RendMustacheFrmTmpltTxt(item, rowTmplt);
+                fnl = fnl + rzt;
+            }
+            return fnl;
+        }
         public static string renderRowTmplt(string rowTmplt, object list)
         {
+            if(IsListSorted(list))
+            {
+                return renderRowTmplt(rowTmplt, (List<SortedList>)list);
+            }
             string fnl = "";
             List<Hashtable> li = (List<Hashtable>)list;
             foreach (Hashtable item in li)
@@ -149,7 +163,7 @@ namespace libx
             {
                 var key = match.Groups[1].Value;
                 // 如果 Hashtable 中包含这个键，则用对应的值替换
-                if (ContainsKey(obj1,key))
+                if (IsContainsKey(obj1,key))
                 {
                     return GetFieldAsStrFrmObj(obj1, key);
                 }
@@ -160,12 +174,15 @@ namespace libx
             return result;
         }
 
-        private static bool ContainsKey(object obj1, string key)
+        public static bool IsContainsKey(object obj1, string key)
         {
             if (obj1 == null || string.IsNullOrEmpty(key))
             {
                 return false;
             }
+
+            if (IsSortedList(obj1))
+                return ((SortedList)obj1).ContainsKey(key);
 
             // 检查是否为字典类型
             if (obj1 is IDictionary<string, object> dictionary)
