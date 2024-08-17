@@ -64,22 +64,29 @@ class Program
         //Print(mkd2console)
         rendTestAgl();
 
-        Main2024(() =>
+        Main2024(async () =>
         {
             if (IsExistFil("c:/teststart.txt"))
             {
-                for(int i=0;i<5;i++)
+                for(int i=0;i<50000;i++)
                 {
                     SortedList o = new SortedList();
                     o.Add("id", i);
                     o.Add("name", "atii");
-                    ormIni.Save2Ini(o, "us150dir");
+                //    ormIni.Save2Ini(o, "us150dir");
                   
                 }
+                PrintLog("stat...");
+                //5w file need 5.5s
+                 //  var list = ormIni.Qry("us150dir");
 
-                var list = ormIni.Qry("us150dir");
-                PrintObj(list);
-               // Print(list);
+                //8s  asy mode
+           //     var list =await ormIni.QryAsync("us150dir");
+            
+                PrintLog("end...");
+
+                // PrintObj(list.Count);
+                // Print(list);
                 Print("ddd");
             }
 

@@ -12,6 +12,7 @@ using static prjx.libx.dbgCls;
 using static prjx.libx.logCls;
 using System.Reflection;
 using System.IO.Compression;
+using System.Collections.Concurrent;
 
 namespace prjx.libx
 {
@@ -165,32 +166,104 @@ namespace prjx.libx
 
             return iniFilesData;
         }
+        static async Task<List<SortedList<string, string>>> ReadIniFilesFromZipsAsync(string directoryPath)
+        {
+            var iniFilesData = new ConcurrentBag<SortedList<string, string>>();
 
+            // 获取指定目录下的所有 zip 文件
+            var zipFiles = Directory.GetFiles(directoryPath, "*.zip");
+
+            var tasks = zipFiles.Select(async zipFile =>
+            {
+                // 读取 zip 文件
+                using (var archive = ZipFile.OpenRead(zipFile))
+                {
+                    var entryTasks = archive.Entries
+                        .Where(entry => entry.FullName.EndsWith(".ini", StringComparison.OrdinalIgnoreCase))
+                        .Select(async entry =>
+                        {
+                            using (var stream = entry.Open())
+                            using (var reader = new StreamReader(stream))
+                            {
+                                var iniData = new SortedList<string, string>();
+
+                                string line;
+                                while ((line = await reader.ReadLineAsync()) != null)
+                                {
+                                    // 假设 ini 文件格式是 key=value
+                                    var parts = line.Split(new[] { '=' }, 2);
+                                    if (parts.Length == 2)
+                                    {
+                                        iniData[parts[0].Trim()] = parts[1].Trim();
+                                    }
+                                }
+
+                                iniFilesData.Add(iniData);
+                            }
+                        });
+
+                    await Task.WhenAll(entryTasks);
+                }
+            });
+
+            await Task.WhenAll(tasks);
+
+            return iniFilesData.ToList();
+        }
         static List<SortedList<string, string>> MergeLists(List<SortedList<string, string>> list1, List<SortedList<string, string>> list2)
         {
-            List<SortedList<string, string>> mergedList = new List<SortedList<string, string>>();
+            //List<SortedList<string, string>> mergedList = new List<SortedList<string, string>>();
 
-            var idhs = new HashSet<string>();
+            //var idhs = new HashSet<string>();
+
+            var mergedList = new ConcurrentBag<SortedList<string, string>>();
+            var idhs = new ConcurrentDictionary<string, bool>();
             // 合并第一个列表中的所有SortedList
-            foreach (var sortedList in list1)
+            // 并行处理第一个列表中的所有 SortedList
+            Parallel.ForEach(list1, sortedList =>
             {
-                idhs.Add(sortedList["id"]);
-                mergedList.Add(new SortedList<string, string>(sortedList));
-            }
+                string id = sortedList.ContainsKey("id") ? sortedList["id"] : null;
+                if (id != null)
+                {
+                    idhs.TryAdd(id, true);
+                    mergedList.Add(new SortedList<string, string>(sortedList));
+                }
+            });
+
+
+            // 并行处理第二个列表中的所有 SortedList
+            Parallel.ForEach(list2, sortedList =>
+            {
+                string id = sortedList.ContainsKey("id") ? sortedList["id"] : null;
+                if (id != null && !idhs.ContainsKey(id))
+                {
+                    idhs.TryAdd(id, true);
+                    mergedList.Add(new SortedList<string, string>(sortedList));
+                }
+            });
+
+            return mergedList.ToList();
+        }
+
+        /*
+           //foreach (var sortedList in list1)
+            //{
+            //    idhs.Add(sortedList["id"]);
+            //    mergedList.Add(new SortedList<string, string>(sortedList));
+            //}
 
             // 合并第二个列表中的所有SortedList
-            foreach (var sortedList in list2)
-            {
-                // 处理相同key的情况
-                if (idhs.Contains(sortedList["id"]))
-                    continue;
+            //foreach (var sortedList in list2)
+            //{
+            //    // 处理相同key的情况
+            //    if (idhs.Contains(sortedList["id"]))
+            //        continue;
 
-                // 如果没有相同的key，直接添加
-                mergedList.Add(new SortedList<string, string>(sortedList));
-            }
-
-            return mergedList;
-        }
+            //    // 如果没有相同的key，直接添加
+            //    mergedList.Add(new SortedList<string, string>(sortedList));
+            //}
+         
+         */
         public static List<SortedList<string, string>> Qry(string dir)
         {
             var liFrmZip = ReadIniFilesFromZips(dir);
@@ -198,11 +271,23 @@ namespace prjx.libx
 
             return MergeLists(liFrmINis, liFrmZip);
         }
+        static async Task Main324(string[] args)
+        {
+            string directoryPath = @"C:\Your\Directory\Path"; // 替换为实际路径
+            var li = await QryAsync(directoryPath);
+        }
+        public static async Task<List<SortedList<string, string>>> QryAsync(string dir)
+        {
+            var liFrmZip = await ReadIniFilesFromZipsAsync(dir);
+            List<SortedList<string, string>> liFrmINis = await ReadFromIniFilesAsync(dir);
+
+            return MergeLists(liFrmINis, liFrmZip);
+        }
 
         /// <summary>
         /// 3. I/O 操作模式：
-      //  并行处理：如果直接从文件夹中读取文件，你可以通过并行读取来提高速度，
-      //  充分利用多核 CPU。Zip 文件的读取虽然也可以并行处理，但受到解压缩和文件流操作的限制。
+        //  并行处理：如果直接从文件夹中读取文件，你可以通过并行读取来提高速度，
+        //  充分利用多核 CPU。Zip 文件的读取虽然也可以并行处理，但受到解压缩和文件流操作的限制。
         /// </summary>
         /// <param name="dir"></param>
         /// <returns></returns>
@@ -213,35 +298,77 @@ namespace prjx.libx
             // 获取目录下的所有 .ini 文件
             string[] iniFiles = Directory.GetFiles(dir, "*.ini");
 
-            foreach (string file in iniFiles)
+            Parallel.ForEach(iniFiles, file =>
             {
                 var sortedList = new SortedList<string, string>();
 
                 // 读取文件的每一行
-                string[] lines = File.ReadAllLines(file);
+                var lines = File.ReadAllLines(file);
 
-                foreach (string line in lines)
+                foreach (var line in lines)
                 {
                     // 跳过空行和注释行
                     if (string.IsNullOrWhiteSpace(line) || line.StartsWith(";"))
                         continue;
 
                     // 解析键值对
-                    string[] keyValue = line.Split(new char[] { '=' }, 2);
+                    var keyValue = line.Split(new[] { '=' }, 2);
                     if (keyValue.Length == 2)
                     {
-                        string key = keyValue[0].Trim();
-                        string value = keyValue[1].Trim();
+                        var key = keyValue[0].Trim();
+                        var value = keyValue[1].Trim();
                         sortedList[key] = value;
                     }
                 }
 
                 liFrmINis.Add(sortedList);
-            }
+            });
 
             return liFrmINis;
         }
 
+
+        private static async Task<List<SortedList<string, string>>> ReadFromIniFilesAsync(string dir)
+        {
+            var iniFiles = Directory.GetFiles(dir, "*.ini");
+            var tasks = iniFiles.Select(file => ProcessFileAsync(file));
+
+            var results = await Task.WhenAll(tasks);
+
+            return results.ToList();
+        }
+
+        private static async Task<SortedList<string, string>> ProcessFileAsync(string file)
+        {
+            var sortedList = new SortedList<string, string>();
+
+            // 异步读取文件的每一行
+            var lines = await File.ReadAllLinesAsync(file);
+
+            foreach (var line in lines)
+            {
+                // 跳过空行和注释行
+                if (string.IsNullOrWhiteSpace(line) || line.StartsWith(";"))
+                    continue;
+
+                // 解析键值对
+                var keyValue = line.Split(new[] { '=' }, 2);
+                if (keyValue.Length == 2)
+                {
+                    var key = keyValue[0].Trim();
+                    var value = keyValue[1].Trim();
+                    sortedList[key] = value;
+                }
+            }
+
+            return sortedList;
+        }
+
+        /// <summary>
+        /// dep
+        /// </summary>
+        /// <param name="iniFilePath"></param>
+        /// <returns></returns>
         public static List<SortedList> qryV2(string iniFilePath)
         {
 
