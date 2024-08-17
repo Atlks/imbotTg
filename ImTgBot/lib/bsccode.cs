@@ -1213,6 +1213,10 @@ namespace prjx.libx
                 return System.Convert.ToBase64String(outputStream.ToArray());
             }
         }
+        public static void PrintObj(object btns)
+        {
+            Print(EncodeJsonFmt(btns));
+        }
         public static void PrintObj(JArray btns)
         {
             Print(EncodeJsonFmt(btns));

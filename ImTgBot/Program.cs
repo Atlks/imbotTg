@@ -66,12 +66,32 @@ class Program
 
         Main2024(() =>
         {
+            if (IsExistFil("c:/teststart.txt"))
+            {
+                for(int i=0;i<5;i++)
+                {
+                    SortedList o = new SortedList();
+                    o.Add("id", i);
+                    o.Add("name", "atii");
+                    ormIni.Save2Ini(o, "us150dir");
+                  
+                }
+
+                var list = ormIni.Qry("us150dir");
+                PrintObj(list);
+               // Print(list);
+                Print("ddd");
+            }
 
             RcvMsgStart();
 
             // 设置每天 5:30 执行任务
             if (IsExistFil("c:/teststart.txt"))
             {
+                SortedList o = new SortedList();
+                o.Add("id", 123);
+                o.Add("name", "atii");
+                ormIni.Save2Ini(o, "us150dir");
 
                 Print("------------------------to console fmt --------");
                 string folderPath = $"{prjdir}/cfg/tmp.md";
