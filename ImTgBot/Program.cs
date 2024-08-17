@@ -206,6 +206,29 @@ class Program
 
     }
 
+    /// <summary>
+    /// befor 5am use only
+    /// </summary>
+    /// <param name="cmd"></param>
+    /// <param name="update"></param>
+    public static void CmdrptodayHdlr(string cmd, Update update)
+    {
+        DelMsg(update, 1);
+        SumupDailyRpt();
+        RptConsecutiveMissingDays();
+        RptMonth();
+        
+    }
+
+    public static void CmdhlpHdlr(string cmd, Update update)
+    {
+        var s = "/rpt 0815\n";
+        s = s + "/rptoday\n";
+        s = s + "rptx 0815   rmt rpt\n ";
+        Sendmsg(chatID, s);
+
+    }
+
     public static void CmdrptxHdlr(string cmd, Update update)
     {
         //    if(cmd=="rpt")

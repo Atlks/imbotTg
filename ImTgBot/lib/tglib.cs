@@ -199,12 +199,18 @@ namespace prjx.libx
                 MsgHdlr(update);
             }
 
+            //cmd
             if (IsStartsWith(update?.Message?.Text, "/"))
             {
                 //cmd moshi 
                 string cmdWzPrm = SubStr(update?.Message?.Text, 1);
                 string[] a = cmdWzPrm.Split(" ");
                 string cmd = a[0];
+                if(cmd.Contains("@"))
+                {
+                    //   /cmd@botname
+                    cmd = GetCmdV3(update?.Message?.Text);
+                }
                 string methodName = "Cmd" + cmd + "Hdlr";
                 Callx(methodName, cmd, update);
             }

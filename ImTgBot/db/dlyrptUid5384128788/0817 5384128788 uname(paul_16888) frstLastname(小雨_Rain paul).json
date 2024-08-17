@@ -1,13 +1,13 @@
 {
-  "MessageId": 8713,
+  "MessageId": 8727,
   "MessageThreadId": null,
   "From": {
-    "Id": 879006550,
+    "Id": 5384128788,
     "IsBot": false,
-    "FirstName": "\u5341 Adam \u5927\u9C7C \u5218\u6D0B \u6C64\u59C6",
-    "LastName": null,
-    "Username": "Xxx007865",
-    "LanguageCode": "zh-hans",
+    "FirstName": "\u5C0F\u96E8_Rain",
+    "LastName": "paul",
+    "Username": "paul_16888",
+    "LanguageCode": null,
     "IsPremium": null,
     "AddedToAttachmentMenu": null,
     "CanJoinGroups": null,
@@ -15,7 +15,7 @@
     "SupportsInlineQueries": null
   },
   "SenderChat": null,
-  "Date": "2024-08-17T10:56:48Z",
+  "Date": "2024-08-17T11:35:05Z",
   "Chat": {
     "Id": -1002003939065,
     "Type": 4,
@@ -60,7 +60,7 @@
   "HasProtectedContent": null,
   "MediaGroupId": null,
   "AuthorSignature": null,
-  "Text": "\u90E8\u95E8\uFF1A\u540C\u57CE\u670D\u52A1\n\u804C\u4F4D\uFF1A \u540E\u7AEF\u5F00\u53D1\n\n### \u4E00\u3001\u4ECA\u65E5\u5DE5\u4F5C\u5185\u5BB9\n817\u8BB0\u5F55 \u4FEE\u590D\u82E5\u5E72bug   \u5B8C\u5584\u82E5\u5E72\u5C0F\u95EE\u9898\n\u9879\u76EE\u6301\u7EED\u63A8\u8FD1\uFF0C \u63A5\u5165angular ui\u6A21\u677F\u6E32\u67D3\uFF0C\u6269\u5C55\u4E86markdown\u8BA9\u5176\u66F4\u52A0\u5B8C\u5907\n \u5B8C\u5584mardown\u683C\u5F0F\u5316\u5230console\u548Ctg\u7684\u4EE3\u7801\n\u6BD4\u8F83vue angular mustache\u7684\u6307\u4EE4\u96C6\uFF0C\u5C06\u5176\u4F18\u5316\u7B80\u5316\u8BED\u6CD5\u683C\u5F0F\n  \n### \u4E8C\u3001\u4ECA\u65E5\u5DE5\u4F5C\u4EAE\u70B9\n angular api\u7684\u5E94\u7528 \u670D\u52A1\u7AEF\u6E32\u67D3ui\u6A21\u677F\n  ### \u4E09\u3001\u9047\u5230\u7684\u95EE\u9898\u53CA\u89E3\u51B3\u65B9\u6848 \n ### \u56DB\u3001\u9700\u8981\u7684\u652F\u6301\u4E0E\u5E2E\u52A9",
+  "Text": "\u90E8\u95E8\uFF1A\u63A8\u5E7F\u811A\u672C\n\u804C\u4F4D\uFF1A \u811A\u672C\u5F00\u53D1\n\n### \u4E00\u3001\u4ECA\u65E5\u5DE5\u4F5C\u5185\u5BB9\n\n\u4EFB\u52A1\u4E00\uFF1A  \n   - \u63CF\u8FF0\uFF1A\u7528\u6237\u89C6\u9891\u90E8\u5206\u5F02\u6B65\u5E76\u53D1\u8C03\u8BD5\n   - \u5B8C\u6210\u60C5\u51B5\uFF1A100%   \n### \u4E8C\u3001\u4ECA\u65E5\u5DE5\u4F5C\u4EAE\u70B9\n\u65E0\n### \u4E09\u3001\u9047\u5230\u7684\u95EE\u9898\u53CA\u89E3\u51B3\u65B9\u6848\n\u65E0\n### \u56DB\u3001\u9700\u8981\u7684\u652F\u6301\u4E0E\u5E2E\u52A9\n\u65E0",
   "Entities": null,
   "EntityValues": null,
   "Animation": null,

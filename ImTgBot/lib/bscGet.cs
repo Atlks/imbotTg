@@ -712,6 +712,31 @@ namespace prjx.libx
                 return "";
         }
 
+        public static string GetCmdV3(string? input)
+        {
+            if (string.IsNullOrEmpty(input)) return "";
+            if (input.StartsWith("/"))
+            {
+                if(input.Contains("@"))
+                {
+                    int startIndex = input.IndexOf('/') + 1; // 从第一个 / 后面开始截取
+                    int endIndex = input.IndexOf('@');
+                    string result = input.Substring(startIndex, endIndex - startIndex);
+                    return result;
+                }
+                else
+                {
+                    string[] a = input.Split(" ");
+                    string cmd = a[0];
+                    return cmd;
+                }
+               
+            }
+
+            else
+                return "";
+        }
+
         public static string GetCmdFun(string? v)
         {
             if (string.IsNullOrEmpty(v)) return "";
