@@ -77,8 +77,12 @@ namespace libx
                 {
                     string colVal = row[i];
                     int widTotal = columnWidths[i];
-                    rzt = rzt+($" {PadRight(colVal, widTotal)} |");
-                //    rzt= rzt+($"| {row[i].PadRight(columnWidths[i])} ");
+                 
+                    if(colVal=="---")
+                        rzt = rzt + ($" { Repeat('-',widTotal)} |");
+                    else
+                        rzt = rzt + ($" {PadRight(colVal, widTotal)} |");
+                    //    rzt= rzt+($"| {row[i].PadRight(columnWidths[i])} ");
                 }
                 rzt = rzt.Trim('|');
                 rzt = rzt + ("\n");
