@@ -1,0 +1,397 @@
+
+        ,--./,-.
+       / #      \
+      |          |
+       \        /    
+        `._,._,'
+           ]
+        ,--'
+        |
+        `.___.
+        
+------callTryAll() catch ex----------_
+System.IO.FileNotFoundException: Could not find file 'C:\Users\Administrator\source\repos\ImTgBot\ImTgBot\logo.txt'.
+File name: 'C:\Users\Administrator\source\repos\ImTgBot\ImTgBot\logo.txt'
+   at Microsoft.Win32.SafeHandles.SafeFileHandle.CreateFile(String fullPath, FileMode mode, FileAccess access, FileShare share, FileOptions options)
+   at Microsoft.Win32.SafeHandles.SafeFileHandle.Open(String fullPath, FileMode mode, FileAccess access, FileShare share, FileOptions options, Int64 preallocationSize, Nullable`1 unixCreateMode)
+   at System.IO.Strategies.OSFileStreamStrategy..ctor(String path, FileMode mode, FileAccess access, FileShare share, FileOptions options, Int64 preallocationSize, Nullable`1 unixCreateMode)
+   at System.IO.Strategies.FileStreamHelpers.ChooseStrategyCore(String path, FileMode mode, FileAccess access, FileShare share, FileOptions options, Int64 preallocationSize, Nullable`1 unixCreateMode)
+   at System.IO.StreamReader.ValidateArgsAndOpenPath(String path, Encoding encoding, Int32 bufferSize)
+   at System.IO.File.ReadAllText(String path, Encoding encoding)
+   at prjx.libx.afrmwk.PrintLogo() in C:\Users\Administrator\source\repos\ImTgBot\ImTgBot\lib\afrmwk.cs:line 184
+   at prjx.libx.afrmwk.<>c.<Evtboot>b__1_0() in C:\Users\Administrator\source\repos\ImTgBot\ImTgBot\lib\afrmwk.cs:line 69
+   at prjx.libx.bsccode.callTryAll(Action value) in C:\Users\Administrator\source\repos\ImTgBot\ImTgBot\lib\bsccode.cs:line 1027
+------end callTryAll() catch ex finish----------_
+0817 163747.366 stat...
+0817 163747.367 end...
+ddd
+GetRealPath=>C:\Users\Administrator\source\repos\ImTgBot\ImTgBot\cfg\cfg.ini
+------------------------to console fmt --------
+当前周期202408
+ 缺失天数 | name                           
+ -------- | ------------------------------ 
+ 2        | @Annie02BNG   maliny xongmixay 
+ 2        | @Annie8899456 安妮             
+
+
+dg323
+dg323
+dbf202
+dg323
+dg323
+dg323
+dg323
+dg323
+dg323
+dg323
+dg323
+dg323
+dg323
+dg323
+dg323
+[
+  {
+    "缺失天数": 2,
+    "name": "@Annie02BNG   maliny xongmixay"
+  },
+  {
+    "缺失天数": 2,
+    "name": "@Annie8899456 安妮"
+  },
+  {
+    "缺失天数": 2,
+    "name": "@Vaenta789  vaenta 婉婷"
+  },
+  {
+    "缺失天数": 2,
+    "name": "Jenny hongkham"
+  },
+  {
+    "缺失天数": 1,
+    "name": "@Kenny_123789   kenny"
+  },
+  {
+    "缺失天数": 1,
+    "name": "toukta"
+  }
+]
+月度统计报表 的统计如下:
+当前周期202408
+
+|缺失天数|name|
+|---|---|
+|2|@Annie02BNG   maliny xongmixay|
+|2|@Annie8899456 安妮|
+|2|@Vaenta789  vaenta 婉婷|
+|2|Jenny hongkham|
+|1|@Kenny_123789   kenny|
+|1|toukta|
+
+====================
+
+
+------------------------to console fmt --------
+月度统计报表 的统计如下:
+当前周期202408
+
+ 缺失天数 | name                           
+ -------- | ------------------------------ 
+ 2        | @Annie02BNG   maliny xongmixay 
+ 2        | @Annie8899456 安妮             
+ 2        | @Vaenta789  vaenta 婉婷        
+ 2        | Jenny hongkham                 
+ 1        | @Kenny_123789   kenny          
+ 1        | toukta                         
+
+
+====================
+
+
+
+Bot ID: 7315476065
+Bot Name: tst_rpt_bot
+Bot Username: tst_rpt_bot
+Message sent successfully
+⏱️⏱️Current time with milliseconds: 2024-08-17 16:37:49.335
+
+
+
+💸💸💸💸### FUN ScheduleDailyTask(([18,55,"SendMessage4DailyRpt"]))
+0817 163749.339 等待到下一个计划时间 02:17:10.6609601
+💰💰💰💰 ENDFUN ScheduleDailyTask():: ret=>""
+⏱️⏱️Current time with milliseconds: 2024-08-17 16:37:50.838
+
+
+
+💸💸💸💸### FUN ScheduleDailyTask(([21,30,"SendMessage4DailyRpt"]))
+0817 163750.839 等待到下一个计划时间 04:52:09.1602173
+💰💰💰💰 ENDFUN ScheduleDailyTask():: ret=>""
+⏱️⏱️Current time with milliseconds: 2024-08-17 16:37:52.344
+        ,--./,-.
+       / #      \
+      |          |
+       \        /    
+        `._,._,'
+           ]
+        ,--'
+        |
+        `.___.
+        
+------callTryAll() catch ex----------_
+System.IO.FileNotFoundException: Could not find file 'C:\Users\Administrator\source\repos\ImTgBot\ImTgBot\logo.txt'.
+File name: 'C:\Users\Administrator\source\repos\ImTgBot\ImTgBot\logo.txt'
+   at Microsoft.Win32.SafeHandles.SafeFileHandle.CreateFile(String fullPath, FileMode mode, FileAccess access, FileShare share, FileOptions options)
+   at Microsoft.Win32.SafeHandles.SafeFileHandle.Open(String fullPath, FileMode mode, FileAccess access, FileShare share, FileOptions options, Int64 preallocationSize, Nullable`1 unixCreateMode)
+   at System.IO.Strategies.OSFileStreamStrategy..ctor(String path, FileMode mode, FileAccess access, FileShare share, FileOptions options, Int64 preallocationSize, Nullable`1 unixCreateMode)
+   at System.IO.Strategies.FileStreamHelpers.ChooseStrategyCore(String path, FileMode mode, FileAccess access, FileShare share, FileOptions options, Int64 preallocationSize, Nullable`1 unixCreateMode)
+   at System.IO.StreamReader.ValidateArgsAndOpenPath(String path, Encoding encoding, Int32 bufferSize)
+   at System.IO.File.ReadAllText(String path, Encoding encoding)
+   at prjx.libx.afrmwk.PrintLogo() in C:\Users\Administrator\source\repos\ImTgBot\ImTgBot\lib\afrmwk.cs:line 184
+   at prjx.libx.afrmwk.<>c.<Evtboot>b__1_0() in C:\Users\Administrator\source\repos\ImTgBot\ImTgBot\lib\afrmwk.cs:line 69
+   at prjx.libx.bsccode.callTryAll(Action value) in C:\Users\Administrator\source\repos\ImTgBot\ImTgBot\lib\bsccode.cs:line 1027
+------end callTryAll() catch ex finish----------_
+0817 163945.875 stat...
+0817 163945.876 end...
+ddd
+GetRealPath=>C:\Users\Administrator\source\repos\ImTgBot\ImTgBot\cfg\cfg.ini
+------------------------to console fmt --------
+当前周期202408
+ 缺失天数 | name                           
+ -------- | ------------------------------ 
+ 2        | @Annie02BNG   maliny xongmixay 
+ 2        | @Annie8899456 安妮             
+
+
+dg323
+dg323
+dbf202
+dg323
+dg323
+dg323
+dg323
+dg323
+dg323
+dg323
+dg323
+dg323
+dg323
+dg323
+dg323
+[
+  {
+    "缺失天数": 2,
+    "name": "@Annie02BNG   maliny xongmixay"
+  },
+  {
+    "缺失天数": 2,
+    "name": "@Annie8899456 安妮"
+  },
+  {
+    "缺失天数": 2,
+    "name": "@Vaenta789  vaenta 婉婷"
+  },
+  {
+    "缺失天数": 2,
+    "name": "Jenny hongkham"
+  },
+  {
+    "缺失天数": 1,
+    "name": "@Kenny_123789   kenny"
+  },
+  {
+    "缺失天数": 1,
+    "name": "toukta"
+  }
+]
+月度统计报表 的统计如下:
+当前周期202408
+
+|缺失天数|name|
+|---|---|
+|2|@Annie02BNG   maliny xongmixay|
+|2|@Annie8899456 安妮|
+|2|@Vaenta789  vaenta 婉婷|
+|2|Jenny hongkham|
+|1|@Kenny_123789   kenny|
+|1|toukta|
+
+====================
+
+
+------------------------to console fmt --------
+月度统计报表 的统计如下:
+当前周期202408
+
+ 缺失天数 | name                           
+ -------- | ------------------------------ 
+ 2        | @Annie02BNG   maliny xongmixay 
+ 2        | @Annie8899456 安妮             
+ 2        | @Vaenta789  vaenta 婉婷        
+ 2        | Jenny hongkham                 
+ 1        | @Kenny_123789   kenny          
+ 1        | toukta                         
+
+
+====================
+
+
+
+Bot ID: 7315476065
+Bot Name: tst_rpt_bot
+Bot Username: tst_rpt_bot
+Message sent successfully
+⏱️⏱️Current time with milliseconds: 2024-08-17 16:39:47.413
+
+
+
+💸💸💸💸### FUN ScheduleDailyTask(([18,55,"SendMessage4DailyRpt"]))
+0817 163947.417 等待到下一个计划时间 02:15:12.5826574
+💰💰💰💰 ENDFUN ScheduleDailyTask():: ret=>""
+⏱️⏱️Current time with milliseconds: 2024-08-17 16:39:48.918
+
+
+
+💸💸💸💸### FUN ScheduleDailyTask(([21,30,"SendMessage4DailyRpt"]))
+0817 163948.920 等待到下一个计划时间 04:50:11.0798382
+💰💰💰💰 ENDFUN ScheduleDailyTask():: ret=>""
+⏱️⏱️Current time with milliseconds: 2024-08-17 16:39:50.433
+        ,--./,-.
+       / #      \
+      |          |
+       \        /    
+        `._,._,'
+           ]
+        ,--'
+        |
+        `.___.
+        
+------callTryAll() catch ex----------_
+System.IO.FileNotFoundException: Could not find file 'C:\Users\Administrator\source\repos\ImTgBot\ImTgBot\logo.txt'.
+File name: 'C:\Users\Administrator\source\repos\ImTgBot\ImTgBot\logo.txt'
+   at Microsoft.Win32.SafeHandles.SafeFileHandle.CreateFile(String fullPath, FileMode mode, FileAccess access, FileShare share, FileOptions options)
+   at Microsoft.Win32.SafeHandles.SafeFileHandle.Open(String fullPath, FileMode mode, FileAccess access, FileShare share, FileOptions options, Int64 preallocationSize, Nullable`1 unixCreateMode)
+   at System.IO.Strategies.OSFileStreamStrategy..ctor(String path, FileMode mode, FileAccess access, FileShare share, FileOptions options, Int64 preallocationSize, Nullable`1 unixCreateMode)
+   at System.IO.Strategies.FileStreamHelpers.ChooseStrategyCore(String path, FileMode mode, FileAccess access, FileShare share, FileOptions options, Int64 preallocationSize, Nullable`1 unixCreateMode)
+   at System.IO.StreamReader.ValidateArgsAndOpenPath(String path, Encoding encoding, Int32 bufferSize)
+   at System.IO.File.ReadAllText(String path, Encoding encoding)
+   at prjx.libx.afrmwk.PrintLogo() in C:\Users\Administrator\source\repos\ImTgBot\ImTgBot\lib\afrmwk.cs:line 184
+   at prjx.libx.afrmwk.<>c.<Evtboot>b__1_0() in C:\Users\Administrator\source\repos\ImTgBot\ImTgBot\lib\afrmwk.cs:line 69
+   at prjx.libx.bsccode.callTryAll(Action value) in C:\Users\Administrator\source\repos\ImTgBot\ImTgBot\lib\bsccode.cs:line 1027
+------end callTryAll() catch ex finish----------_
+
+titlexxx
+
+|uidx|unamex|
+|---|---|
+|111|Alice文件|
+|002|Bob|
+
+
+{{foot}}
+
+
+
+0817 164114.501 stat...
+0817 164114.547 end...
+ddd
+GetRealPath=>C:\Users\Administrator\source\repos\ImTgBot\ImTgBot\cfg\cfg.ini
+------------------------to console fmt --------
+当前周期202408
+ 缺失天数 | name                           
+ -------- | ------------------------------ 
+ 2        | @Annie02BNG   maliny xongmixay 
+ 2        | @Annie8899456 安妮             
+
+
+dg323
+dg323
+dbf202
+dg323
+dg323
+dg323
+dg323
+dg323
+dg323
+dg323
+dg323
+dg323
+dg323
+dg323
+dg323
+[
+  {
+    "缺失天数": 2,
+    "name": "@Annie02BNG   maliny xongmixay"
+  },
+  {
+    "缺失天数": 2,
+    "name": "@Annie8899456 安妮"
+  },
+  {
+    "缺失天数": 2,
+    "name": "@Vaenta789  vaenta 婉婷"
+  },
+  {
+    "缺失天数": 2,
+    "name": "Jenny hongkham"
+  },
+  {
+    "缺失天数": 1,
+    "name": "@Kenny_123789   kenny"
+  },
+  {
+    "缺失天数": 1,
+    "name": "toukta"
+  }
+]
+月度统计报表 的统计如下:
+当前周期202408
+
+|缺失天数|name|
+|---|---|
+|2|@Annie02BNG   maliny xongmixay|
+|2|@Annie8899456 安妮|
+|2|@Vaenta789  vaenta 婉婷|
+|2|Jenny hongkham|
+|1|@Kenny_123789   kenny|
+|1|toukta|
+
+====================
+
+
+------------------------to console fmt --------
+月度统计报表 的统计如下:
+当前周期202408
+
+ 缺失天数 | name                           
+ -------- | ------------------------------ 
+ 2        | @Annie02BNG   maliny xongmixay 
+ 2        | @Annie8899456 安妮             
+ 2        | @Vaenta789  vaenta 婉婷        
+ 2        | Jenny hongkham                 
+ 1        | @Kenny_123789   kenny          
+ 1        | toukta                         
+
+
+====================
+
+
+
+Bot ID: 7315476065
+Bot Name: tst_rpt_bot
+Bot Username: tst_rpt_bot
+Message sent successfully
+⏱️⏱️Current time with milliseconds: 2024-08-17 16:41:17.270
+
+
+
+💸💸💸💸### FUN ScheduleDailyTask(([18,55,"SendMessage4DailyRpt"]))
+0817 164117.272 等待到下一个计划时间 02:13:42.7271551
+💰💰💰💰 ENDFUN ScheduleDailyTask():: ret=>""
+⏱️⏱️Current time with milliseconds: 2024-08-17 16:41:18.783
+
+
+
+💸💸💸💸### FUN ScheduleDailyTask(([21,30,"SendMessage4DailyRpt"]))
+0817 164118.785 等待到下一个计划时间 04:48:41.2144428
+💰💰💰💰 ENDFUN ScheduleDailyTask()::

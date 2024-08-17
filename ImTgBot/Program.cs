@@ -62,27 +62,29 @@ class Program
         //string folderPath = $"{prjdir}/db/dlyrpt0812";
         //string mkd2console = GetRptToday(folderPath);
         //Print(mkd2console)
-        rendTestAgl();
+
 
         Main2024(async () =>
         {
+
+            rendTestAgl();
             if (IsExistFil("c:/teststart.txt"))
             {
-                for(int i=0;i<50000;i++)
+                for (int i = 0; i < 50000; i++)
                 {
                     SortedList o = new SortedList();
                     o.Add("id", i);
                     o.Add("name", "atii");
-                //    ormIni.Save2Ini(o, "us150dir");
-                  
+                    //    ormIni.Save2Ini(o, "us150dir");
+
                 }
                 PrintLog("stat...");
                 //5w file need 5.5s
-                 //  var list = ormIni.Qry("us150dir");
+                //  var list = ormIni.Qry("us150dir");
 
                 //8s  asy mode
-           //     var list =await ormIni.QryAsync("us150dir");
-            
+                //     var list =await ormIni.QryAsync("us150dir");
+
                 PrintLog("end...");
 
                 // PrintObj(list.Count);
@@ -138,7 +140,7 @@ class Program
 
     }
 
-  
+
     private static void rendTest2()
     {
         // 读取模板文件内容
