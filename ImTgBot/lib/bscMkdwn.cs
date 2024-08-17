@@ -38,7 +38,7 @@ namespace libx
                     if (isTable)
                     {
                         // 如果当前行不是表格且之前行是表格，则格式化表格
-                        rztLines = rztLines +   FormatAndPrintTable(tableLines)+"\n";
+                        rztLines = rztLines +   FormatTableMkd2console(tableLines)+"\n";
                         tableLines.Clear();
                         isTable = false;
                     }
@@ -50,12 +50,17 @@ namespace libx
             // 如果文档以表格结尾，处理剩余的表格
             if (isTable)
             {
-                rztLines = rztLines + ( FormatAndPrintTable(tableLines))+"\n";
+                rztLines = rztLines + ( FormatTableMkd2console(tableLines))+"\n";
             }
             return rztLines;
         }
 
-        private static string FormatAndPrintTable(List<string[]> tableLines)
+        /// <summary>
+        /// convert fmt
+        /// </summary>
+        /// <param name="tableLines"></param>
+        /// <returns></returns>
+        public static string FormatTableMkd2console(List<string[]> tableLines)
         {
             if (tableLines.Count == 0) return "";
 

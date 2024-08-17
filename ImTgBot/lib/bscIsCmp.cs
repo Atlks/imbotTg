@@ -6,6 +6,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -471,6 +472,35 @@ namespace prjx.libx
             }
             return false;
         }
+
+        public static bool IsContainsKey(object obj1, string key)
+        {
+            if (obj1 == null || string.IsNullOrEmpty(key))
+            {
+                return false;
+            }
+
+            if (IsSortedList(obj1))
+                return ((SortedList)obj1).ContainsKey(key);
+
+            // 检查是否为字典类型
+            if (obj1 is IDictionary<string, object> dictionary)
+            {
+                return dictionary.ContainsKey(key);
+            }
+
+            // 检查是否为动态对象
+            if (obj1 is IDictionary<string, object> dynamicObject)
+            {
+                return dynamicObject.ContainsKey(key);
+            }
+
+            // 检查对象是否包含指定属性
+            Type type = obj1.GetType();
+            PropertyInfo property = type.GetProperty(key);
+            return property != null;
+        }
+
         public static bool IsSortedList(object sortedList)
         {
             // 使用 is 关键字检查对象类型
