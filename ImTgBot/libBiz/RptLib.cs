@@ -96,6 +96,81 @@ namespace libBiz
 
         }
 
+        public static void RptConsecutiveMissingDaysBydate( string mmdd_todaycode )
+        {
+          //  weekendChk4lx();
+            SortedList inimap = NewSortedListFrmIni($"{prjdir}/cfg/mem.ini");
+            HashSet<string> ids = GetKeysAsHashSet(inimap);
+            List<SortedList> li = new List<SortedList>();
+            foreach (string id in ids)
+            {
+                try
+                {
+                    if (id == "6436991688")
+                        Print("dbf202");
+                    string dbfld = $"{prjdir}/db/dlyrptUid" + id;
+               
+                    if (IsExistFilNameStartWz(mmdd_todaycode, dbfld))
+                        continue;
+
+                    //有确实的了consct miss
+                    int missdays = clalcMissdays(mmdd_todaycode, dbfld);
+                    if (missdays > 0)
+                    {
+                        if (missdays > 29)
+                            missdays = 3;
+                        SortedList o = new SortedList();
+                        //     o.Add("uid", id);
+                        o.Add("name", inimap[id]);
+                        o.Add("连续缺失天数", "🔥" + missdays);
+
+                        li.Add(o);
+                    }
+
+                }
+                catch (Exception e)
+                {
+                    PrintExcept("RptConsecutiveMissingDays.forBlk", e);
+                }
+
+            }
+            Print(EncodeJsonFmt(li));
+
+            //    rendTest(li);
+
+            //=---------------rendTable to mkd
+
+            Hashtable tmpltMkdwn = new Hashtable();
+            tmpltMkdwn.Add(render_title_table, "| 连续缺失天数 | uname | ");
+
+            tmpltMkdwn.Add(render_rowRender, (SortedList row) =>
+            {
+                return "|" + row["连续缺失天数"].ToString() + "|" + row["name"].ToString() + "|";
+            });
+
+            string mkdwn2tbl = RenderTable(li, tmpltMkdwn);
+            //  string mkdwn2 = ConvertToMarkdown(li);
+            Print(mkdwn2tbl);
+
+
+            //-----------rend to consle
+            string mkd2consoleTable = FormatAndPrintMarkdownTable(mkdwn2tbl);
+            Print(mkd2consoleTable);
+
+
+            //------------rend to tmplt
+            Hashtable data = new Hashtable();
+            data["tb1142"] = mkd2consoleTable;
+            data["dt"] = mmdd_todaycode;
+
+
+            var tmpltf = $"{prjdir}/cfg/csctv_lyesyvMiss_tmplt.md";
+            string messageContent = RendTmpltMD(data, tmpltf);
+            Print(messageContent);
+            // 发送消息到指定聊天
+            Sendmsg(chatID, messageContent);
+
+        }
 
 
 

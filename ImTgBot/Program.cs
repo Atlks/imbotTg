@@ -202,7 +202,8 @@ class Program
         a = update.Message.Text.Split(" ");
         string date = a[1];
         SumupDailyRptBydate(date, update.Message.Chat.Id.ToString());
-
+        RptConsecutiveMissingDaysBydate(date);
+        RptMonth();
 
     }
 
