@@ -86,13 +86,34 @@ namespace prjx.libx
             return (hs.Contains(areaname));
         }
 
-        public static void weekendChk()
+        public static void weekendChk4lx()
         {
             var datecode = GetTodayCodeMnsHrs(6);
             if (IsSunday("2024" + datecode))
             {
                 throw new Exception("sunday ex...");
             }
+            if(IsBeforeMonday7AM())
+                throw new Exception("sunday ex...");
+            // if(ismonday)
+            ///throw
+        }
+
+        static bool IsBeforeMonday7AM()
+        {
+            DateTime now = DateTime.Now;
+
+            // 判断是否是星期一
+            if (now.DayOfWeek == DayOfWeek.Monday)
+            {
+                // 判断时间是否在凌晨7点之前
+                if (now.TimeOfDay < new TimeSpan(7, 0, 0))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
         public static bool isMmsgHasMatchPostWd(HashSet<string> postnKywd位置词set, string[] kwds)
         {

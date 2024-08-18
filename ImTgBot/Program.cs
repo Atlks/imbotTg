@@ -70,6 +70,7 @@ class Program
             rendTestAgl();
             if (IsExistFil("c:/teststart.txt"))
             {
+                RptMonth();
                 for (int i = 0; i < 50000; i++)
                 {
                     SortedList o = new SortedList();

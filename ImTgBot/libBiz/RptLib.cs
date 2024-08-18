@@ -22,7 +22,7 @@ namespace libBiz
 
         public static void RptConsecutiveMissingDays()
         {
-            weekendChk();
+            weekendChk4lx();
             SortedList inimap = NewSortedListFrmIni($"{prjdir}/cfg/mem.ini");
             HashSet<string> ids = GetKeysAsHashSet(inimap);
             List<SortedList> li = new List<SortedList>();
@@ -102,6 +102,7 @@ namespace libBiz
 
         public static void RptMonth()
         {
+            weekendChk4lx();
             SortedList inimap = NewSortedListFrmIni($"{prjdir}/cfg/mem.ini");
             HashSet<string> ids = GetKeysAsHashSet(inimap);
             List<SortedList> li = new List<SortedList>();
@@ -444,7 +445,7 @@ namespace libBiz
         {
             try
             {
-                weekendChk();
+                weekendChk4lx();
                 // 创建 Telegram Bot 客户端
                 var botClient = new TelegramBotClient(tokenbot);
 
@@ -529,7 +530,7 @@ namespace libBiz
         {
             try
             {
-                weekendChk();
+                weekendChk4lx();
                 // 创建 Telegram Bot 客户端
                 var botClient = new TelegramBotClient(tokenbot);
 

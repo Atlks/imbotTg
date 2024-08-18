@@ -12,6 +12,7 @@ namespace libx
     {    // 定时任务调度器
         public static void ScheduleDailyTask(int hour, int minute, Delegate task)
         {
+            weekendChk4lx();
             var __METHOD__ = nameof(ScheduleDailyTask);
             NewThrd(() =>
             {
