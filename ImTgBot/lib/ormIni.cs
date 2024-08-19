@@ -39,7 +39,7 @@ namespace prjx.libx
                 }
             }
         }
-
+        //dep 
         public static void saveIni(SortedList<string, string> sortedList, string Strfile)
         {
             //if (!File.Exists(Strfile))
@@ -57,6 +57,7 @@ namespace prjx.libx
             }
         }
 
+        //maybe dep ,mlt file use zip mode
         public static void save(SortedList sortedList, string Strfile)
         {
             //if (!File.Exists(Strfile))

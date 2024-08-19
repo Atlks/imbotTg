@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "description": "TsPrj1",
   "main": "app.js",
+  "type": "module",
   "author": {
     "name": ""
   },
@@ -26,5 +27,8 @@
     "plugins": [
       "@typescript-eslint"
     ]
+  },
+  "dependencies": {
+    "express": "^4.19.2"
   }
 }

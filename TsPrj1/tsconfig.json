@@ -1,10 +1,12 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
+    "module": "ESNext",
     "target": "es6",
     "lib": [ "es6" ],
-    "esModuleInterop": true,
-    "sourceMap": true
+    "esModuleInterop": true, // 允许默认导入 CommonJS 模块
+    "sourceMap": true,
+    "moduleResolution": "node"
+  
   },
   "exclude": [
     "node_modules"
