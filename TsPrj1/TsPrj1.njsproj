@@ -35,6 +35,7 @@
     <Content Include="idx.htm" />
     <Content Include="package.json" />
     <Content Include="public\index.html" />
+    <Content Include="pugTmplt.htm" />
     <Content Include="README.md" />
     <Content Include="tsconfig.json" />
   </ItemGroup>

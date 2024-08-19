@@ -4,6 +4,11 @@ import { echo } from './lib/bsc.js';
 echo("echo11111");
 //import('./bscd');
 //require('./bscd');
+import pug from 'pug';
+// ���벢ʹ��һ��������Ⱦ template.pug
+console.log(pug.renderFile('pugTmplt.htm', {
+    name: 'Timothy'
+}));
 //var f = global["myFunction"]
 //var s = myFunction("111")
 console.log("start wbsvr...");

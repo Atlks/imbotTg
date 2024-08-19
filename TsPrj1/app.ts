@@ -4,7 +4,12 @@ import { sleep, echo } from './lib/bsc.js';
 echo("echo11111")
 //import('./bscd');
 //require('./bscd');
+import pug from 'pug';
 
+// 编译并使用一组数据渲染 template.pug
+console.log(pug.renderFile('pugTmplt.htm', {
+    name: 'Timothy'
+}));
 //var f = global["myFunction"]
 
 //var s = myFunction("111")
