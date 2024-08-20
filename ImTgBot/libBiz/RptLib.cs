@@ -22,154 +22,169 @@ namespace libBiz
 
         public static void RptConsecutiveMissingDays()
         {
-            weekendChk4lx();
-            SortedList inimap = NewSortedListFrmIni($"{prjdir}/cfg/mem.ini");
-            HashSet<string> ids = GetKeysAsHashSet(inimap);
-            List<SortedList> li = new List<SortedList>();
-            foreach (string id in ids)
+            try
             {
-                try
-                {
-                    if (id == "6436991688")
-                        Print("dbf202");
-                    string dbfld = $"{prjdir}/db/dlyrptUid" + id;
-                    string todaycode = GetTodayCode();
-                    if (IsExistFilNameStartWz(todaycode, dbfld))
-                        continue;
 
-                    //有确实的了consct miss
-                    int missdays = clalcMissdays(todaycode, dbfld);
-                    if(missdays>0)
+
+                weekendChk4lx();
+                SortedList inimap = NewSortedListFrmIni($"{prjdir}/cfg/mem.ini");
+                HashSet<string> ids = GetKeysAsHashSet(inimap);
+                List<SortedList> li = new List<SortedList>();
+                foreach (string id in ids)
+                {
+                    try
                     {
-                        if (missdays > 29)
-                            missdays = 3;
-                        SortedList o = new SortedList();
-                   //     o.Add("uid", id);
-                        o.Add("name", inimap[id]);
-                        o.Add("连续缺失天数", "🔥" + missdays);
+                        if (id == "6436991688")
+                            Print("dbf202");
+                        string dbfld = $"{prjdir}/db/dlyrptUid" + id;
+                        string todaycode = GetTodayCode();
+                        if (IsExistFilNameStartWz(todaycode, dbfld))
+                            continue;
 
-                        li.Add(o);
+                        //有确实的了consct miss
+                        int missdays = clalcMissdays(todaycode, dbfld);
+                        if (missdays > 0)
+                        {
+                            if (missdays > 29)
+                                missdays = 3;
+                            SortedList o = new SortedList();
+                            //     o.Add("uid", id);
+                            o.Add("name", inimap[id]);
+                            o.Add("连续缺失天数", "🔥" + missdays);
+
+                            li.Add(o);
+                        }
+
                     }
-                   
+                    catch (Exception e)
+                    {
+                        PrintExcept("RptConsecutiveMissingDays.forBlk", e);
+                    }
+
                 }
-                catch (Exception e)
+                Print(EncodeJsonFmt(li));
+
+                //    rendTest(li);
+
+                //=---------------rendTable to mkd
+
+                Hashtable tmpltMkdwn = new Hashtable();
+                tmpltMkdwn.Add(render_title_table, "| 连续缺失天数 | uname | ");
+
+                tmpltMkdwn.Add(render_rowRender, (SortedList row) =>
                 {
-                    PrintExcept("RptConsecutiveMissingDays.forBlk", e);
-                }
+                    return "|" + row["连续缺失天数"].ToString() + "|" + row["name"].ToString() + "|";
+                });
 
+                string mkdwn2tbl = RenderTable(li, tmpltMkdwn);
+                //  string mkdwn2 = ConvertToMarkdown(li);
+                Print(mkdwn2tbl);
+
+
+                //-----------rend to consle
+                string mkd2consoleTable = FormatAndPrintMarkdownTable(mkdwn2tbl);
+                Print(mkd2consoleTable);
+
+
+                //------------rend to tmplt
+                Hashtable data = new Hashtable();
+                data["tb1142"] = mkd2consoleTable;
+                data["dt"] = GetTodayCode();
+
+
+                var tmpltf = $"{prjdir}/cfg/csctv_lyesyvMiss_tmplt.md";
+                string messageContent = RendTmpltMD(data, tmpltf);
+                Print(messageContent);
+                // 发送消息到指定聊天
+                Sendmsg(chatID, messageContent);
             }
-            Print(EncodeJsonFmt(li));
-
-            //    rendTest(li);
-
-            //=---------------rendTable to mkd
-
-            Hashtable tmpltMkdwn = new Hashtable();
-            tmpltMkdwn.Add(render_title_table, "| 连续缺失天数 | uname | ");
-
-            tmpltMkdwn.Add(render_rowRender, (SortedList row) =>
+            catch (Exception e)
             {
-                return "|" + row["连续缺失天数"].ToString() + "|" + row["name"].ToString() + "|"  ;
-            });
-
-            string mkdwn2tbl = RenderTable(li, tmpltMkdwn);
-            //  string mkdwn2 = ConvertToMarkdown(li);
-            Print(mkdwn2tbl);
-
-
-            //-----------rend to consle
-            string mkd2consoleTable = FormatAndPrintMarkdownTable(mkdwn2tbl);
-            Print(mkd2consoleTable);
-
-
-            //------------rend to tmplt
-            Hashtable data = new Hashtable();
-            data["tb1142"] = mkd2consoleTable;
-            data["dt"] = GetTodayCode();
-
-
-            var tmpltf = $"{prjdir}/cfg/csctv_lyesyvMiss_tmplt.md";
-            string messageContent = RendTmpltMD(data, tmpltf);
-            Print(messageContent);
-            // 发送消息到指定聊天
-            Sendmsg(chatID, messageContent);
-
+                PrintExcept("RptConsecutiveMissingDaysBydate", e);
+            }
         }
 
-        public static void RptConsecutiveMissingDaysBydate( string mmdd_todaycode )
+        public static void RptConsecutiveMissingDaysBydate(string mmdd_todaycode)
         {
-          //  weekendChk4lx();
-            SortedList inimap = NewSortedListFrmIni($"{prjdir}/cfg/mem.ini");
-            HashSet<string> ids = GetKeysAsHashSet(inimap);
-            List<SortedList> li = new List<SortedList>();
-            foreach (string id in ids)
+            try
             {
-                try
+
+                //  weekendChk4lx();
+                SortedList inimap = NewSortedListFrmIni($"{prjdir}/cfg/mem.ini");
+                HashSet<string> ids = GetKeysAsHashSet(inimap);
+                List<SortedList> li = new List<SortedList>();
+                foreach (string id in ids)
                 {
-                    if (id == "6436991688")
-                        Print("dbf202");
-                    string dbfld = $"{prjdir}/db/dlyrptUid" + id;
-               
-                    if (IsExistFilNameStartWz(mmdd_todaycode, dbfld))
-                        continue;
-
-                    //有确实的了consct miss
-                    int missdays = clalcMissdays(mmdd_todaycode, dbfld);
-                    if (missdays > 0)
+                    try
                     {
-                        if (missdays > 29)
-                            missdays = 3;
-                        SortedList o = new SortedList();
-                        //     o.Add("uid", id);
-                        o.Add("name", inimap[id]);
-                        o.Add("连续缺失天数", "🔥" + missdays);
+                        if (id == "6436991688")
+                            Print("dbf202");
+                        string dbfld = $"{prjdir}/db/dlyrptUid" + id;
 
-                        li.Add(o);
+                        if (IsExistFilNameStartWz(mmdd_todaycode, dbfld))
+                            continue;
+
+                        //有确实的了consct miss
+                        int missdays = clalcMissdays(mmdd_todaycode, dbfld);
+                        if (missdays > 0)
+                        {
+                            if (missdays > 29)
+                                missdays = 3;
+                            SortedList o = new SortedList();
+                            //     o.Add("uid", id);
+                            o.Add("name", inimap[id]);
+                            o.Add("连续缺失天数", "🔥" + missdays);
+
+                            li.Add(o);
+                        }
+
+                    }
+                    catch (Exception e)
+                    {
+                        PrintExcept("RptConsecutiveMissingDays.forBlk", e);
                     }
 
                 }
-                catch (Exception e)
+                Print(EncodeJsonFmt(li));
+
+                //    rendTest(li);
+
+                //=---------------rendTable to mkd
+
+                Hashtable tmpltMkdwn = new Hashtable();
+                tmpltMkdwn.Add(render_title_table, "| 连续缺失天数 | uname | ");
+
+                tmpltMkdwn.Add(render_rowRender, (SortedList row) =>
                 {
-                    PrintExcept("RptConsecutiveMissingDays.forBlk", e);
-                }
+                    return "|" + row["连续缺失天数"].ToString() + "|" + row["name"].ToString() + "|";
+                });
 
+                string mkdwn2tbl = RenderTable(li, tmpltMkdwn);
+                //  string mkdwn2 = ConvertToMarkdown(li);
+                Print(mkdwn2tbl);
+
+
+                //-----------rend to consle
+                string mkd2consoleTable = FormatAndPrintMarkdownTable(mkdwn2tbl);
+                Print(mkd2consoleTable);
+
+
+                //------------rend to tmplt
+                Hashtable data = new Hashtable();
+                data["tb1142"] = mkd2consoleTable;
+                data["dt"] = mmdd_todaycode;
+
+
+                var tmpltf = $"{prjdir}/cfg/csctv_lyesyvMiss_tmplt.md";
+                string messageContent = RendTmpltMD(data, tmpltf);
+                Print(messageContent);
+                // 发送消息到指定聊天
+                Sendmsg(chatID, messageContent);
             }
-            Print(EncodeJsonFmt(li));
-
-            //    rendTest(li);
-
-            //=---------------rendTable to mkd
-
-            Hashtable tmpltMkdwn = new Hashtable();
-            tmpltMkdwn.Add(render_title_table, "| 连续缺失天数 | uname | ");
-
-            tmpltMkdwn.Add(render_rowRender, (SortedList row) =>
+            catch (Exception e)
             {
-                return "|" + row["连续缺失天数"].ToString() + "|" + row["name"].ToString() + "|";
-            });
-
-            string mkdwn2tbl = RenderTable(li, tmpltMkdwn);
-            //  string mkdwn2 = ConvertToMarkdown(li);
-            Print(mkdwn2tbl);
-
-
-            //-----------rend to consle
-            string mkd2consoleTable = FormatAndPrintMarkdownTable(mkdwn2tbl);
-            Print(mkd2consoleTable);
-
-
-            //------------rend to tmplt
-            Hashtable data = new Hashtable();
-            data["tb1142"] = mkd2consoleTable;
-            data["dt"] = mmdd_todaycode;
-
-
-            var tmpltf = $"{prjdir}/cfg/csctv_lyesyvMiss_tmplt.md";
-            string messageContent = RendTmpltMD(data, tmpltf);
-            Print(messageContent);
-            // 发送消息到指定聊天
-            Sendmsg(chatID, messageContent);
-
+                PrintExcept("RptConsecutiveMissingDaysBydate", e);
+            }
         }
 
 
@@ -177,87 +192,96 @@ namespace libBiz
 
         public static void RptMonth()
         {
-            weekendChk4lx();
-            SortedList inimap = NewSortedListFrmIni($"{prjdir}/cfg/mem.ini");
-            HashSet<string> ids = GetKeysAsHashSet(inimap);
-            List<SortedList> li = new List<SortedList>();
-            string month = "";
-            foreach (string id in ids)
+            try
             {
-                if (id == "6436991688")
-                    Print("dbf202");
-                string dbfld = $"{prjdir}/db/dlyrptUid" + id;
-                string todaycode = GetTodayCode();
-                //if (IsExistFilNameStartWz(todaycode, dbfld))
-                //    continue;
-                month = "2024" + Left(todaycode, 2);
-                string yyyymmdd = "2024" + todaycode;
 
-                //有确实的了consct miss
-                int missdays = 0;
-                try
-                {
-                    int maxday = GetMaxDaysOfMonth(month);
-                    missdays = calcCountByMonthByUid(month, dbfld);
-                }
-                catch (Exception e)
-                {
-                    Print(e);
-                }
 
-                if (missdays > 0)
+                weekendChk4lx();
+                SortedList inimap = NewSortedListFrmIni($"{prjdir}/cfg/mem.ini");
+                HashSet<string> ids = GetKeysAsHashSet(inimap);
+                List<SortedList> li = new List<SortedList>();
+                string month = "";
+                foreach (string id in ids)
                 {
-                    SortedList o = new SortedList();
-                    //    o.Add("已发天数", missdays);
-                    o.Add("缺失天数", missdays);
-                 //   o.Add("id", id);
-                    o.Add("name", inimap[id]);
-                    li.Add(o);
-                }
+                    if (id == "6436991688")
+                        Print("dbf202");
+                    string dbfld = $"{prjdir}/db/dlyrptUid" + id;
+                    string todaycode = GetTodayCode();
+                    //if (IsExistFilNameStartWz(todaycode, dbfld))
+                    //    continue;
+                    month = "2024" + Left(todaycode, 2);
+                    string yyyymmdd = "2024" + todaycode;
 
+                    //有确实的了consct miss
+                    int missdays = 0;
+                    try
+                    {
+                        int maxday = GetMaxDaysOfMonth(month);
+                        missdays = calcCountByMonthByUid(month, dbfld);
+                    }
+                    catch (Exception e)
+                    {
+                        Print(e);
+                    }
+
+                    if (missdays > 0)
+                    {
+                        SortedList o = new SortedList();
+                        //    o.Add("已发天数", missdays);
+                        o.Add("缺失天数", missdays);
+                        //   o.Add("id", id);
+                        o.Add("name", inimap[id]);
+                        li.Add(o);
+                    }
+
+                }
+                Print(EncodeJsonFmt(li));
+
+                //string title = $"|uid|缺失天数|name|\n|-----|-----|---|\n";
+                //Hashtable tmpltMkdwn = new Hashtable();
+                //tmpltMkdwn.Add(render_title_table, title);
+                //tmpltMkdwn.Add(render_rowRender, (SortedList row) =>
+                //{
+                //    return "|" + row["uid"].ToString() + "|" + row["缺失天数"].ToString() + "|" + row["name"].ToString() + "|";
+                //});
+
+                //string mkdwn2 = RenderTable(li, tmpltMkdwn);
+
+                //string mkdwn = FormatListToMarkdown(li, title, (row) =>
+                //        {
+                //            return "|" + row["uid"].ToString() + "|" + row["连续缺失天数"].ToString() + "|" + row["name"].ToString() + "|";
+                //        });
+
+
+                //--------------rend to mdk
+                //string mkdwn2 = ConvertToMarkdown(li);
+
+                // 创建数据模型
+                var data = new
+                {
+                    yyyymm = month,
+                    list2024 = li,
+                    foot = "===================="
+                };
+                // 渲染模板
+                var tmpltf = $"{prjdir}/cfg/rpt_month_tmplt.md";
+                string mkdwn2 = RenderTemplate4Agl(ReadAllText(tmpltf), data);
+
+                Print(mkdwn2);
+
+                Print("------------------------to console fmt --------");
+                string mkd2console = FormatMarkdown2consl(mkdwn2);
+                //   Print($"|{month}|\n" + mkd2console);
+                Print(mkd2console);
+
+
+                // 发送消息到指定聊天
+                Sendmsg(chatID, mkd2console);
             }
-            Print(EncodeJsonFmt(li));
-
-            //string title = $"|uid|缺失天数|name|\n|-----|-----|---|\n";
-            //Hashtable tmpltMkdwn = new Hashtable();
-            //tmpltMkdwn.Add(render_title_table, title);
-            //tmpltMkdwn.Add(render_rowRender, (SortedList row) =>
-            //{
-            //    return "|" + row["uid"].ToString() + "|" + row["缺失天数"].ToString() + "|" + row["name"].ToString() + "|";
-            //});
-
-            //string mkdwn2 = RenderTable(li, tmpltMkdwn);
-
-            //string mkdwn = FormatListToMarkdown(li, title, (row) =>
-            //        {
-            //            return "|" + row["uid"].ToString() + "|" + row["连续缺失天数"].ToString() + "|" + row["name"].ToString() + "|";
-            //        });
-
-
-            //--------------rend to mdk
-            //string mkdwn2 = ConvertToMarkdown(li);
-          
-            // 创建数据模型
-            var data = new
+            catch (Exception e)
             {
-                yyyymm = month,
-                list2024 = li,
-                foot = "===================="
-            };
-            // 渲染模板
-            var tmpltf = $"{prjdir}/cfg/rpt_month_tmplt.md";
-            string mkdwn2 = RenderTemplate4Agl(ReadAllText(tmpltf), data);
-           
-            Print(mkdwn2);
-
-            Print("------------------------to console fmt --------");
-            string mkd2console = FormatMarkdown2consl(mkdwn2);
-            //   Print($"|{month}|\n" + mkd2console);
-            Print(mkd2console);
- 
-          
-            // 发送消息到指定聊天
-            Sendmsg(chatID, mkd2console);
+                PrintExcept("rptmonth", e);
+            }
         }
 
         /// <summary>
@@ -304,7 +328,7 @@ namespace libBiz
             }
             //  return countDays;
             //miss days
-            return wkdays  - paddWkdays - leftWkdays-countDays;
+            return wkdays - paddWkdays - leftWkdays - countDays;
 
 
         }
@@ -419,7 +443,8 @@ namespace libBiz
             // 获取发送人的用户名
             string username = message.From?.Username ?? "unknown";
 
-            string timecode = DateTime.Now.ToString("MMdd");
+            string timecode = GetTodayCode();
+            //DateTime.Now.ToString("MMdd");
             string fname = $"{timecode} {uid} uname({username}) frstLastname({message.From?.FirstName} {message.From?.LastName})";
             //  +DateTime.Now.ToString("yyyyMMdd")
             // 确定文件路径
@@ -642,7 +667,7 @@ namespace libBiz
             //     search usrs  where uid not in files
             HashSet<string> noExistUid = SubtractFrmFilist(ids, alreadySendUsers);
             SortedList noRptUsers = FltWhrKeyIn(inimap, noExistUid);
-       //     noRptUsers.Remove("uid");
+            //     noRptUsers.Remove("uid");
             string mkd = FormatSortedListToMarkdown4rptToday(noRptUsers);
             Print(mkd);
 
