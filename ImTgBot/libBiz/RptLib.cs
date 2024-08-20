@@ -104,6 +104,19 @@ namespace libBiz
             }
         }
 
+        static bool IsWithinTimeRange6am23pm()
+        {
+            // 获取当前时间
+            TimeSpan currentTime = DateTime.Now.TimeOfDay;
+
+            // 定义时间范围
+            TimeSpan startTime = new TimeSpan(6, 0, 0); // 6:00 AM
+            TimeSpan endTime = new TimeSpan(23, 50, 0); // 11:50 PM
+
+            // 判断当前时间是否在范围内
+            return currentTime >= startTime && currentTime <= endTime;
+        }
+
         public static void RptConsecutiveMissingDaysBydate(string mmdd_todaycode)
         {
             try

@@ -3,6 +3,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -15,7 +16,27 @@ using static prjx.libx.bscEncdCls;
 namespace prjx.libx
 {
     public class filex
-    { 
+    {
+        public static void AppendTozip(string zipFilePath, string fileName, string value)
+        {
+            // 追加到zip文件中
+            using (FileStream zipToOpen = new FileStream(zipFilePath, FileMode.OpenOrCreate))
+            {
+                using (ZipArchive archive = new ZipArchive(zipToOpen, ZipArchiveMode.Update))
+                {
+                    // 检查是否已存在相同文件名的条目
+                    //def overwt
+                    // 将ini文件添加到zip中
+                    ZipArchiveEntry entry = archive.CreateEntry(fileName);
+                    using (StreamWriter writer = new StreamWriter(entry.Open()))
+                    {
+
+                        writer.Write(value);
+                    }
+                }
+            }
+        }
+
         public static HashSet<string> ProcessFilesDep(string directoryPath)
         {
             var resultSet = new HashSet<string>();

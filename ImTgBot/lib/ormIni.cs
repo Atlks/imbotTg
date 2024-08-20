@@ -13,13 +13,25 @@ using static prjx.libx.logCls;
 using System.Reflection;
 using System.IO.Compression;
 using System.Collections.Concurrent;
+using libx;
 
 namespace prjx.libx
 {
     internal class ormIni
     {
-        public static void Save2Ini(SortedList sortedList, string dir)
+
+       public static void Save2Ini(SortedList sortedList, string dir)
         {
+            //-----------save to mem
+            // 尝试获取缓存的对象
+            var cachedItem = WeakCache.Get(dir);
+            if (cachedItem != null)
+            {
+                var li = (List<SortedList<string, string>>)cachedItem;
+                Add(sortedList, li, "id");
+            }
+
+            //-----------dave to ini file
             //if (!File.Exists(Strfile))
             //    File.WriteAllText(Strfile, "[]");
             const bool Append = false;
@@ -38,7 +50,23 @@ namespace prjx.libx
                     writer.WriteLine($"{entry.Key}={entry.Value}");
                 }
             }
+            //-------------save to zip
+            AppendToCacheZip(ConvertToStringSortedList(sortedList), dir + "/" + dir + "_cache.zip");
+
+
         }
+
+        private static void Add(SortedList sortedList, List<SortedList<string, string>> li, string idKey)
+        {
+            SortedList iotDic1 = ToIotDic(li);
+            SetField(iotDic1, sortedList["id"].ToString(), ConvertToStringSortedList(sortedList));
+
+            List<SortedList<string, string>> lifnl = ToListFrmIotDic(iotDic1);
+
+            li = lifnl;
+        }
+
+     
         //dep 
         public static void saveIni(SortedList<string, string> sortedList, string Strfile)
         {
@@ -126,6 +154,44 @@ namespace prjx.libx
             return dataList;
         }
 
+
+        static List<SortedList<string, string>> ReadIniFilesFromZip(string zipFile)
+        {
+            List<SortedList<string, string>> iniFilesData = new List<SortedList<string, string>>();
+
+
+            // 读取zip文件
+            using (ZipArchive archive = ZipFile.OpenRead(zipFile))
+            {
+                foreach (var entry in archive.Entries)
+                {
+                    if (entry.FullName.EndsWith(".ini", StringComparison.OrdinalIgnoreCase))
+                    {
+                        using (var stream = entry.Open())
+                        using (var reader = new StreamReader(stream))
+                        {
+                            SortedList<string, string> iniData = new SortedList<string, string>();
+
+                            string line;
+                            while ((line = reader.ReadLine()) != null)
+                            {
+                                // 假设ini文件格式是 key=value
+                                var parts = line.Split(new[] { '=' }, 2);
+                                if (parts.Length == 2)
+                                {
+                                    iniData[parts[0].Trim()] = parts[1].Trim();
+                                }
+                            }
+
+                            iniFilesData.Add(iniData);
+                        }
+                    }
+                }
+            }
+
+
+            return iniFilesData;
+        }
         static List<SortedList<string, string>> ReadIniFilesFromZips(string directoryPath)
         {
             List<SortedList<string, string>> iniFilesData = new List<SortedList<string, string>>();
@@ -265,12 +331,78 @@ namespace prjx.libx
             //}
          
          */
+   public     static void AppendToCacheZip(SortedList<string, string> data, string zipFilePath)
+        {
+            // 获取文件名
+
+            string fileName = "id_" + data["id"] + ".ini"; // 文件名以".ini"结尾
+
+            string txt = ToIniTxt(data);
+
+            AppendTozip(zipFilePath, fileName, txt);
+        }
+
+     
+        public static void WriteToCacheZip(List<SortedList<string, string>> dataList, string zipFilePath)
+        {
+            using (FileStream zipToOpen = new FileStream(zipFilePath, FileMode.Create))
+            {
+                using (ZipArchive archive = new ZipArchive(zipToOpen, ZipArchiveMode.Create))
+                {
+                    foreach (var sortedList in dataList)
+                    {
+                        string fileName = "id_" + sortedList["id"] + ".ini";
+
+                        //      fileName += ".ini"; // 文件名以".ini"结尾
+
+                        // 创建ini文件内容
+                        StringBuilder iniContent = new StringBuilder();
+                        foreach (var pair in sortedList)
+                        {
+
+                            iniContent.AppendLine($"{pair.Key}={pair.Value}");
+
+                        }
+
+                        //   如果 ZIP 文件中已经存在相同的文件名，默认行为是不会抛出异常
+                        //   ，而是会覆盖该文件名对应的条目
+                        // 将ini文件添加到zip中
+                        ZipArchiveEntry entry = archive.CreateEntry(fileName);
+                        using (StreamWriter writer = new StreamWriter(entry.Open()))
+                        {
+                            writer.Write(iniContent.ToString());
+                        }
+
+                    }
+                    //endfor
+                }
+            }
+        }
         public static List<SortedList<string, string>> Qry(string dir)
         {
-            var liFrmZip = ReadIniFilesFromZips(dir);
-            List<SortedList<string, string>> liFrmINis = ReadFrmINiFils(dir);
+            // 尝试获取缓存的对象
+            var cachedItem = WeakCache.Get(dir);
+            if (cachedItem != null)
+                return (List<SortedList<string, string>>)cachedItem;
+            //   List<SortedList<string, string>> liFrmINis = ReadFrmINiFils(dir);
+            else
+            {
+                //查询list 和单个ini相当于双写了。。list读取zip，单个读取ini
+                List<SortedList<string, string>> liFrmINis = new List<SortedList<string, string>>();
+                string shareCacheZip = dir + "/" + dir + "_cache.zip";
+                if (IsExistFil(shareCacheZip))
+                    liFrmINis = ReadIniFilesFromZip(shareCacheZip);
+                else
+                {
+                    liFrmINis = ReadFrmINiFils(dir);
+                    WriteToCacheZip(liFrmINis, shareCacheZip);
+                }
 
-            return MergeLists(liFrmINis, liFrmZip);
+                WeakCache.Add(dir, liFrmINis);
+
+                return liFrmINis;
+            }
+
         }
         static async Task Main324(string[] args)
         {

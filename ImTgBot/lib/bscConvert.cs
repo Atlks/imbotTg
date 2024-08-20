@@ -27,6 +27,59 @@ namespace prjx.libx
 {
     public class bscConvert
     {
+        public static List<SortedList<string, string>> ToListFrmIotDic(SortedList liIot)
+        {
+            List<SortedList<string, string>> lifnl = new List<SortedList<string, string>>();
+            foreach (DictionaryEntry kv in liIot)
+            {
+                //   SortedList<string, string> rw = kv;
+                lifnl.Add((SortedList<string, string>)kv.Value);
+            }
+
+            return lifnl;
+        }
+        public static string ToIniTxt(SortedList<string, string> data)
+        {
+            // 创建ini文件内容
+            StringBuilder iniContent = new StringBuilder();
+            foreach (var pair in data)
+            {
+
+                iniContent.AppendLine($"{pair.Key}={pair.Value}");
+
+            }
+            string txt = iniContent.ToString();
+            return txt;
+        }
+
+        public static SortedList ToIotDic(List<SortedList<string, string>> li)
+        {
+            SortedList liIot = new SortedList();
+            foreach (SortedList<string, string> row in li)
+            {
+                liIot.Add(row["id"], row);
+            }
+
+            return liIot;
+        }
+
+        public static SortedList<string, string> ConvertToStringSortedList(SortedList originalList)
+        {
+            // 创建新的泛型 SortedList<string, string>
+            SortedList<string, string> result = new SortedList<string, string>();
+
+            // 遍历原始非泛型 SortedList
+            foreach (DictionaryEntry entry in originalList)
+            {
+                // 将键和值转换为字符串并添加到新列表中
+                string key = entry.Key.ToString();
+                string value = entry.Value.ToString();
+                result.Add(key, value);
+            }
+
+            return result;
+        }
+
         public static List<Hashtable> ConvertToHashtableList(List<dynamic> dynamicList)
         {
             var hashtableList = new List<Hashtable>();

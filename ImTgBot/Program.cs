@@ -79,9 +79,11 @@ class Program
                     //    ormIni.Save2Ini(o, "us150dir");
 
                 }
+                PrintLog("fill ccache...");
+                var list = ormIni.Qry("us150dir");
                 PrintLog("stat...");
                 //5w file need 5.5s
-                //  var list = ormIni.Qry("us150dir");
+                  list = ormIni.Qry("us150dir");
 
                 //8s  asy mode
                 //     var list =await ormIni.QryAsync("us150dir");
