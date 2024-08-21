@@ -53,6 +53,61 @@ namespace prjx.libx
         public static   string tokenbot = "YOUR_BOT_API_TOKEN"; // 替换为你的 Bot API Token
         public static   string rcvmsgDir = "rcvmsgDir"; // 存储消息的目录
         public static string chatID;
+
+        public static async Task<HashSet<string>> GetGroupUserIdsAsync(long chatId)
+        {
+            var userIds = new HashSet<string>();
+            int totalMembers = await botClient.GetChatMemberCountAsync(new ChatId(chatId));
+
+            try
+            {
+                for (int i = 0; i < totalMembers; i++)
+                {
+                    ChatMember chatMember = await botClient.GetChatMemberAsync(new ChatId(chatId), i);
+                    if (chatMember != null && chatMember.User != null)
+                    {
+                        userIds.Add(chatMember.User.Id.ToString());
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+            }
+
+            return userIds;
+        }
+        public async Task<HashSet<int>> GetGroupAdmIdsAsync(long chatId)
+        {
+            var userIds = new HashSet<int>();
+            int offset = 0;
+            const int limit = 100; // 每次获取的成员数量
+
+            try
+            {
+                ChatMember[] chatMembers;
+
+                do
+                {
+                  //  botClient.GetChatMemberAsync
+                    chatMembers = await botClient.GetChatAdministratorsAsync(new ChatId(chatId));
+                    foreach (var member in chatMembers)
+                    {
+                        userIds.Add((int)member.User.Id);
+                    }
+
+                    offset += limit;
+
+                } while (chatMembers.Length == limit); // 当获取到的成员数量不足 limit 时，表示已经获取完所有成员
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+            }
+
+            return userIds;
+        }
+
         public static void RcvMsgStart()
         {
 

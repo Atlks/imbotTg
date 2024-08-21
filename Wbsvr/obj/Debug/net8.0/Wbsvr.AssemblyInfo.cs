@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Wbsvr")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7750cb7aff51d41c761c2490d27ccf7cd5694e09")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+4d33ac5dea0d6174432036c4806e5701eabf978b")]
 [assembly: System.Reflection.AssemblyProductAttribute("Wbsvr")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Wbsvr")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

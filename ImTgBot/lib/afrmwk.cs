@@ -46,7 +46,7 @@ namespace prjx.libx
         {
             // 设置控制台输出编码为 UTF-8
             Console.OutputEncoding = Encoding.UTF8;
-            Print("!!!!****⚠️⚠️⚠️⚠️⚠️⚠️⚠️ver88888899g❣❣");
+            Print("!!!!****⚠️⚠️⚠️⚠️⚠️⚠️⚠️ver821a1020❣❣");
             PrintLog("ttt");
 
             Boot4StbltSetting();

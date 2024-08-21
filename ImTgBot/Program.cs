@@ -97,6 +97,9 @@ class Program
 
             RcvMsgStart();
 
+
+         
+
             // 设置每天 5:30 执行任务
             if (IsExistFil("c:/teststart.txt"))
             {
@@ -117,8 +120,11 @@ class Program
                 //SleepSec(5);
                 //RptConsecutiveMissingDays();
                 //SleepSec(5);
+
                 RptMonth();
                 // ScheduleDailyTask(12, 01, SendMessage4DailyRpt);//test
+
+               // var lstMemIDs = GetGroupUserIdsAsync(ToLong(chatID, 0)).Result;
             }
 
 
@@ -143,6 +149,24 @@ class Program
 
     }
 
+    private static long ToLong(string str,long df)
+    {
+        try
+        {
+            long number = long.Parse(str);
+            Console.WriteLine($"Converted number: {number}");
+            return number;
+        }
+        catch (FormatException)
+        {
+            Console.WriteLine("Input string is not in a correct format.");
+        }
+        catch (OverflowException)
+        {
+            Console.WriteLine("The number is too large or too small for a long.");
+        }
+        return df;
+    }
 
     private static void rendTest2()
     {
